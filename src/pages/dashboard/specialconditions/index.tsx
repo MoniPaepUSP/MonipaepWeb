@@ -26,21 +26,20 @@ import { MdSearch } from 'react-icons/md'
 import { RiAddLine } from 'react-icons/ri'
 
 import { withSSRAuth } from "../../../utils/withSSRAuth";
-import { Pagination } from "../../../components/Pagination";
 import { useCan } from "../../../hooks/useCan";
-import { GetUsmsResponse, useUsms, Usm } from "../../../hooks/useUsms";
-import { UsmAddModal } from "../../../components/Modal/UsmAddModal";
-import { UsmExcludeAlert } from "../../../components/AlertDialog/UsmExcludeAlert";
-import { UsmEditModal } from "../../../components/Modal/UsmEditModal";
+import { Pagination } from "../../../components/Pagination";
+import { SpecialCondition, useSpecialConditions } from "../../../hooks/useSpecialConditions";
+import { SpecialConditionExcludeAlert } from "../../../components/AlertDialog/SpecialConditionExcludeAlert";
+import { SpecialConditionEditModal } from "../../../components/Modal/SpecialConditionEditModal";
+import { SpecialConditionAddModal } from "../../../components/Modal/SpecialConditionAddModal";
 
-export default function Usms() {
+export default function SpecialConditions() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
-  const [usmToBeEdited, setUsmToBeEdited] = useState<Usm | undefined>(undefined)
-  const [usmToBeDeleted, setUsmToBeDeleted] = useState<Usm | undefined>(undefined)
-  const isAdmin = useCan({ roles: ['general.admin'] })
-
-  const { data, isLoading, isFetching, error, refetch } = useUsms({ page, filter: search })
+  const [specialConditionToBeEdited, setSpecialConditionToBeEdited] = useState<SpecialCondition | undefined>(undefined)
+  const [specialConditionToBeDeleted, setSpecialConditionToBeDeleted] = useState<SpecialCondition | undefined>(undefined)
+  const isAdmin = useCan({ roles: ["general.admin", "local.admin"] })
+  const { data, isLoading, isFetching, error, refetch } = useSpecialConditions({ page, filter: search })
   const {
     isOpen: isOpenEditModal,
     onOpen: onOpenEditModal,
@@ -64,29 +63,27 @@ export default function Usms() {
     setSearch(event.target.value)
   }, [])
 
-  const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)
-    , [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput])
 
-  function handleEditUsm(usm: Usm) {
-    setUsmToBeEdited(usm)
+  function handleEditSpecialCondition(specialCondition: SpecialCondition) {
+    setSpecialConditionToBeEdited(specialCondition)
     onOpenEditModal()
   }
 
-  function handleDeleteUsm(usm: Usm) {
-    setUsmToBeDeleted(usm)
+  function handleDeleteSpecialCondition(specialCondition: SpecialCondition) {
+    setSpecialConditionToBeDeleted(specialCondition)
     onOpenExcludeAlert()
   }
 
   return (
     <>
       <Head>
-        <title>MoniPaEp | Unidades de saúde</title>
+        <title>MoniPaEp | Condições Especiais</title>
       </Head>
 
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
         <Heading ml="8" my="6">
-          Unidades de saúde
+          Condições Especiais
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
         {isLoading ? (
@@ -99,26 +96,26 @@ export default function Usms() {
           </Box>
         ) : (
           <>
-            <UsmAddModal
+            <SpecialConditionAddModal
               isOpen={isOpenAddModal}
               onClose={onCloseAddModal}
               refetchList={refetch}
             />
 
-            {usmToBeEdited && (
-              <UsmEditModal
+            {specialConditionToBeEdited && (
+              <SpecialConditionEditModal
                 isOpen={isOpenEditModal}
                 onClose={onCloseEditModal}
-                usm={usmToBeEdited}
+                specialCondition={specialConditionToBeEdited}
                 refetchList={refetch}
               />
             )}
 
-            {usmToBeDeleted && (
-              <UsmExcludeAlert
+            {specialConditionToBeDeleted && (
+              <SpecialConditionExcludeAlert
                 isOpen={isOpenExcludeAlert}
                 onClose={onCloseExcludeAlert}
-                usm={usmToBeDeleted.name}
+                specialConditionId={specialConditionToBeDeleted.id}
                 refetchList={refetch}
               />
             )}
@@ -128,7 +125,7 @@ export default function Usms() {
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
-                <Input placeholder="Filtrar por unidade..." onChange={debouncedChangeInputHandler} />
+                <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
               {isAdmin && (
                 <Button
@@ -138,17 +135,17 @@ export default function Usms() {
                   leftIcon={<Icon as={RiAddLine} fontSize="20" />}
                   onClick={onOpenAddModal}
                 >
-                  Adicionar nova unidade
+                  Adicionar nova condição especial
                 </Button>
               )}
             </Flex>
 
             <Flex direction="column" w="100%" overflow="auto" px="8">
-              {data?.totalUsms === 0 ? (
-                <Text mt="2">
+              {data?.totalSpecialConditions === 0 ? (
+                <Text mt="2 ">
                   {search === '' ?
-                    'Não existem unidades de saúde registradas até o momento.' :
-                    'A busca não encontrou nenhuma unidade de saúde com esse nome.'
+                    'Não existem condições especiais registradas até o momento.' :
+                    'A busca não encontrou nenhuma condição especial com esse nome.'
                   }
                 </Text>
               ) : (
@@ -156,24 +153,20 @@ export default function Usms() {
                   <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
-                        <Th>Nome da unidade</Th>
-                        <Th>Endereço</Th>
-                        <Th>Bairro</Th>
+                        <Th>Condição especial</Th>
+                        <Th>Descrição</Th>
                         {isAdmin && <Th></Th>}
                       </Tr>
                     </Thead>
 
                     <Tbody>
-                      {data?.usms.map(usm => (
-                        <Tr key={usm.name} _hover={{ bgColor: 'gray.50' }}>
-                          <Td>
-                            <Text>{usm.name}</Text>
+                      {data?.specialConditions.map(specialCondition => (
+                        <Tr key={specialCondition.id} _hover={{ bgColor: 'gray.50' }}>
+                          <Td w="20%">
+                            <Text>{specialCondition.name}</Text>
                           </Td>
-                          <Td>
-                            <Text>{usm.formattedAddress}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{usm.neighborhood}</Text>
+                          <Td w="80%">
+                            <Text>{specialCondition.description}</Text>
                           </Td>
                           {isAdmin && (
                             <Td pr="4">
@@ -183,7 +176,7 @@ export default function Usms() {
                                   height="36px"
                                   width="36px"
                                   colorScheme="blue"
-                                  onClick={() => handleEditUsm(usm)}
+                                  onClick={() => handleEditSpecialCondition(specialCondition)}
                                 >
                                   <Icon as={BiPencil} />
                                 </Button>
@@ -193,7 +186,7 @@ export default function Usms() {
                                   ml="2"
                                   width="36px"
                                   colorScheme="red"
-                                  onClick={() => handleDeleteUsm(usm)}
+                                  onClick={() => handleDeleteSpecialCondition(specialCondition)}
                                 >
                                   <Icon as={BiTrash} />
                                 </Button>
@@ -208,7 +201,7 @@ export default function Usms() {
                   <Box w="100%" mt="3" mb="5">
                     <Pagination
                       currentPage={page}
-                      totalRegisters={data?.totalUsms}
+                      totalRegisters={data?.totalSpecialConditions}
                       onPageChange={setPage}
                     />
                   </Box>
@@ -222,7 +215,7 @@ export default function Usms() {
   )
 }
 
-Usms.layout = DashboardLayout
+SpecialConditions.layout = DashboardLayout
 
 export const getServerSideProps = withSSRAuth(async (ctx) => {
   return { props: {} }

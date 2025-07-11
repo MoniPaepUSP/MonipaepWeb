@@ -2,15 +2,21 @@ import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
 
-type Usm = {
+export type Usm = {
+  id: string;
   name: string;
-  address: string;
-	neighborhood: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+  street?: string;
+  number?: string;
+  formattedAddress: string;
+  weekdayDescriptions: string[];
 	latitude: number;
 	longitude: number;
 }
 
-type GetUsmsResponse = {
+export type GetUsmsResponse = {
   usms: Usm[],
   totalUsms: number,
 }

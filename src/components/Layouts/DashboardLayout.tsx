@@ -10,7 +10,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <Flex w="100vw" h="100%" maxWidth="100%" bgColor="gray.100">
       <Sidebar />
-      <Flex ml="64" direction="column" h="100%" width="calc(100% - 256px)">
+      <Flex ml="72" direction="column" h="100%" width="calc(100% - 256px)">
         {children}
       </Flex>
     </Flex>

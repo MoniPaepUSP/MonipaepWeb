@@ -115,7 +115,7 @@ export function FaqEditModal({ isOpen, onClose, faq, refetchList }: FaqModalProp
     >
       <ModalOverlay>
         <ModalContent height="auto" width="550px">
-          <ModalHeader textAlign="center">Editar FAQ</ModalHeader>
+          <ModalHeader textAlign="center">Editar Pergunta</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Text fontWeight="semibold" mb="2">Pergunta</Text>

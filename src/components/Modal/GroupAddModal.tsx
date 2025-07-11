@@ -9,22 +9,21 @@ import {
   ModalBody,
   ModalHeader,
   Text,
+  Textarea,
   Input,
   useToast,
-  Textarea,
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
 
-interface SymptomAddModalProps {
+interface GroupAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModalProps) {
+export function GroupAddModal({ isOpen, onClose, refetchList }: GroupAddModalProps) {
   const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
   const [touched, setTouched] = useState(false)
   const [isPosting, setIsPosting] = useState(false)
   const toast = useToast()
@@ -36,27 +35,19 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
     }
   }
 
-  function handleDescriptionInputChanged(event: ChangeEvent<HTMLTextAreaElement>) {
-    setDescription(event.target.value)
-    if (!touched) {
-      setTouched(true)
-    }
-  }
-
   function handleClose() {
     setName('')
-    setDescription('')
     setTouched(false)
     onClose()
   }
 
-  async function handleSymptomCreation() {
-    if (name !== '' && description !== '') {
+  async function handleGroupCreation() {
+    if (name !== '') {
       setIsPosting(true)
       try {
-        const response = await api.post('/symptom/', { name, description })
+        const response = await api.post('/faqgroup/', { name })
         toast({
-          title: "Sucesso na criação do sintoma",
+          title: "Sucesso na criação da categoria",
           description: response.data?.success,
           status: "success",
           isClosable: true
@@ -65,8 +56,8 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
         refetchList()
       } catch (error: any) {
         toast({
-          title: "Erro na criação do sintoma",
-          description: "Sintoma já registrado no sistema",
+          title: "Erro na criação da categoria",
+          description: error.response?.data.error,
           status: "error",
           isClosable: true
         })
@@ -74,8 +65,8 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
       setIsPosting(false)
     } else {
       toast({
-        title: "Erro na criação do sintoma",
-        description: "Preencha o campo com o nome do sintoma",
+        title: "Erro na criação da categoria",
+        description: "Preencha os campos corretamente",
         status: "error",
         isClosable: true
       })
@@ -92,19 +83,17 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
-        <ModalContent height="auto" width="500px">
-          <ModalHeader textAlign="center">Adicionar sintoma</ModalHeader>
+        <ModalContent height="auto" width="550px">
+          <ModalHeader textAlign="center">Adicionar Categoria</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="2">Nome do sintoma</Text>
+            <Text fontWeight="semibold" mb="2">Nome</Text>
             <Input value={name} mb="2" onChange={handleNameInputChanged} />
-            <Text fontWeight="semibold" mb="2">Descrição do sintoma</Text>
-            <Textarea value={description} mb="2" onChange={handleDescriptionInputChanged} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
             <Button
-              onClick={handleSymptomCreation}
+              onClick={handleGroupCreation}
               colorScheme="blue"
               disabled={!touched}
               isLoading={isPosting}

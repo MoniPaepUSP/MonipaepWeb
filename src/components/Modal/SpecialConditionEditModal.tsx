@@ -15,26 +15,26 @@ import {
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
-import { Symptom } from '../../hooks/useSymptoms';
+import { SpecialCondition } from '../../hooks/useSpecialConditions';
 
-interface SymptomModalProps {
+interface SpecialConditionModalProps {
   isOpen: boolean;
-  symptom: Symptom;
+  specialCondition: SpecialCondition;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: SymptomModalProps) {
-  const [name, setName] = useState(symptom.name || '')
-  const [description, setDescription] = useState(symptom.description || '')
+export function SpecialConditionEditModal({ isOpen, onClose, specialCondition, refetchList }: SpecialConditionModalProps) {
+  const [name, setName] = useState(specialCondition.name || '')
+  const [description, setDescription] = useState(specialCondition.description || '')
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
-    setName(symptom.name || '')
-    setDescription(symptom.description || '')
-  }, [symptom])
+    setName(specialCondition.name || '')
+    setDescription(specialCondition.description || '')
+  }, [specialCondition])
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setName(event.target.value)
@@ -57,12 +57,12 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
 
   async function handleUpdate() {
     if (name !== '' && description !== '') {
-      if (name !== symptom.name || description !== symptom.description) {
+      if (name !== specialCondition.name || description !== specialCondition.description) {
         setIsUpdating(true)
         try {
-          const response = await api.put(`/symptom/${symptom.id}`, { name, description })
+          const response = await api.put(`/specialcondition/${specialCondition.id}`, { name, description })
           toast({
-            title: "Sucesso na alteração do sintoma",
+            title: "Sucesso na alteração da condição especial",
             description: response.data?.success,
             status: "success",
             isClosable: true
@@ -72,8 +72,8 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
           refetchList()
         } catch (error: any) {
           toast({
-            title: "Erro na alteração do sintoma",
-            description: "Sintoma já registrado no sistema",
+            title: "Erro na alteração da condição especial",
+            description: "Condição especial já registrado no sistema",
             status: "error",
             isClosable: true
           })
@@ -81,16 +81,16 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
         setIsUpdating(false)
       } else {
         toast({
-          title: "Erro na alteração do sintoma",
-          description: "Sintoma sem alteração",
+          title: "Erro na alteração da condição especial",
+          description: "Condição especial sem alteração",
           status: "error",
           isClosable: true
         })
       }
     } else {
       toast({
-        title: "Erro na alteração do sintoma",
-        description: "Preencha o campo com o nome do sintoma",
+        title: "Erro na alteração da condição especial",
+        description: "Preencha o campo com o nome da condição especial",
         status: "error",
         isClosable: true
       })
@@ -108,10 +108,10 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
     >
       <ModalOverlay>
         <ModalContent height="auto" width="500px">
-          <ModalHeader textAlign="center">Editar sintoma</ModalHeader>
+          <ModalHeader textAlign="center">Editar condição especial</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="2">Nome do sintoma</Text>
+            <Text fontWeight="semibold" mb="2">Nome da condição especial</Text>
             <Input value={name} mb="2" onChange={handleNameInputChanged} />
             <Text fontWeight="semibold" mb="2">Descrição</Text>
             <Textarea value={description} mb="2" onChange={handleDescriptionInputChanged} />

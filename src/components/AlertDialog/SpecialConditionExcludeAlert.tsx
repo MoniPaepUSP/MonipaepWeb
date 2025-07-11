@@ -12,24 +12,24 @@ import {
 
 import { api } from "../../services/apiClient";
 
-interface SymptomExcludeAlertProps {
+interface SpecialConditionExcludeAlertProps {
   isOpen: boolean;
-  symptomId: string;
+  specialConditionId: string;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomExcludeAlert({ isOpen, onClose, symptomId, refetchList }: SymptomExcludeAlertProps) {
+export function SpecialConditionExcludeAlert({ isOpen, onClose, specialConditionId, refetchList }: SpecialConditionExcludeAlertProps) {
   const [isDeletting, setIsDeletting] = useState(false)
   const cancelRef = useRef(null)
   const toast = useToast()
 
-  async function handleSymptomExclusion() {
+  async function handleSpecialConditionExclusion() {
     setIsDeletting(true)
     try {
-      const response = await api.delete(`/symptom/${symptomId}`)
+      const response = await api.delete(`/specialcondition/${specialConditionId}`)
       toast({
-        title: "Sucesso na exclusão do sintoma",
+        title: "Sucesso na exclusão da condição especial",
         description: response.data?.success,
         status: "success",
         isClosable: true
@@ -62,13 +62,13 @@ export function SymptomExcludeAlert({ isOpen, onClose, symptomId, refetchList }:
             Confirmação necessária
           </AlertDialogHeader>
           <AlertDialogBody>
-            Tem certeza que deseja excluir este sintoma?
+            Tem certeza que deseja excluir esta condição especial?
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose} variant="outline">
               Cancelar
             </Button>
-            <Button colorScheme="red" onClick={handleSymptomExclusion} ml={3} isLoading={isDeletting}>
+            <Button colorScheme="red" onClick={handleSpecialConditionExclusion} ml={3} isLoading={isDeletting}>
               Excluir
             </Button>
           </AlertDialogFooter>

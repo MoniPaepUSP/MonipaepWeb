@@ -1,7 +1,6 @@
 import { useState, ChangeEvent } from 'react';
 import {
   Button,
-  Input,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -10,53 +9,54 @@ import {
   ModalBody,
   ModalHeader,
   Text,
-  Textarea,
+  Input,
   useToast,
+  Textarea,
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
 
-interface HealthProtocolAddModalProps {
+interface ComorbidityAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function HealthProtocolAddModal({ isOpen, onClose, refetchList }: HealthProtocolAddModalProps) {
-  const [title, setTitle] = useState('')
+export function ComorbidityAddModal({ isOpen, onClose, refetchList }: ComorbidityAddModalProps) {
+  const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [touched, setTouched] = useState(false)
   const [isPosting, setIsPosting] = useState(false)
   const toast = useToast()
 
-  function handleTitleInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setTitle(event.target.value)
-    if(!touched) {
+  function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setName(event.target.value)
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleDescriptionInputChanged(event: ChangeEvent<HTMLTextAreaElement>) {
     setDescription(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleClose() {
-    setTitle('')
+    setName('')
     setDescription('')
     setTouched(false)
     onClose()
   }
 
-  async function handleHealthProtocolCreation() {
-    if(title !== '' && description !== '') {
+  async function handleComorbidityCreation() {
+    if (name !== '' && description !== '') {
       setIsPosting(true)
       try {
-        const response = await api.post('/healthprotocol/', { title, description })
+        const response = await api.post('/comorbidity/', { name, description })
         toast({
-          title: "Sucesso na criação do protocolo",
+          title: "Sucesso na criação do comorbidade",
           description: response.data?.success,
           status: "success",
           isClosable: true
@@ -65,8 +65,8 @@ export function HealthProtocolAddModal({ isOpen, onClose, refetchList }: HealthP
         refetchList()
       } catch (error: any) {
         toast({
-          title: "Erro na criação do protocolo",
-          description: error.response?.data.error,
+          title: "Erro na criação da comorbidade",
+          description: "Comorbidade já registrado no sistema",
           status: "error",
           isClosable: true
         })
@@ -74,39 +74,39 @@ export function HealthProtocolAddModal({ isOpen, onClose, refetchList }: HealthP
       setIsPosting(false)
     } else {
       toast({
-        title: "Erro na criação do protocolo",
-        description: "Preencha os campos corretamente",
+        title: "Erro na criação da comorbidade",
+        description: "Preencha o campo com o nome da comorbidade",
         status: "error",
         isClosable: true
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
         <ModalContent height="auto" width="500px">
-          <ModalHeader textAlign="center">Adicionar protocolo de saúde</ModalHeader>
+          <ModalHeader textAlign="center">Adicionar comorbidade</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="2">Título</Text>
-            <Input value={title} mb="2" onChange={handleTitleInputChanged}/>
-            <Text fontWeight="semibold" mt="2">Descrição</Text>
-            <Textarea value={description} mb="2" height="100px" onChange={handleDescriptionInputChanged}/>
+            <Text fontWeight="semibold" mb="2">Nome da comorbidade</Text>
+            <Input value={name} mb="2" onChange={handleNameInputChanged} />
+            <Text fontWeight="semibold" mb="2">Descrição da comorbidade</Text>
+            <Textarea value={description} mb="2" onChange={handleDescriptionInputChanged} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleHealthProtocolCreation} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleComorbidityCreation}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isPosting}
             >
               Registrar

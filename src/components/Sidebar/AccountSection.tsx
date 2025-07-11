@@ -8,37 +8,37 @@ export function AccountSection() {
   const { user, signOut } = useContext(AuthContext)
   return (
     <Box w="100%" maxW="100%" mt="auto">
-      <Flex 
-        alignItems="center" 
-        w="calc(100% - 2rem)" 
-        mx="4"
-        mb="2" 
+      <Flex
+        alignItems="center"
+        w="calc(100% - 2rem)"
+        m="4"
+        mb="2"
         bgColor="custom.blue-900"
         p="3"
         rounded="8"
       >
         <Avatar size="sm" name={user?.user.name} />
-        <Flex 
-          ml="3"  
+        <Flex
+          ml="3"
           direction="column"
           alignItems="flex-start"
         >
-          { user && (
+          {user && (
             <>
               <Text color="white">
-                { user.user.name.length <= 20 ? 
-                  user.user.name : 
+                {user.user.name.length <= 20 ?
+                  user.user.name :
                   `${user.user.name.substring(0, 20)}...`
                 }
               </Text>
               <Text color="gray.400" fontSize="small">
-                { user.user.email.length <= 21 ? 
-                  user.user.email : 
+                {user.user.email.length <= 21 ?
+                  user.user.email :
                   `${user.user.email.substring(0, 21)}...`
                 }
               </Text>
             </>
-          ) }
+          )}
         </Flex>
       </Flex>
 
@@ -46,36 +46,36 @@ export function AccountSection() {
         <NavLink href="/dashboard/account" icon={FiSettings}>
           Conta
         </NavLink>
-        <Box 
-          w="100%" 
+        <Box
+          w="100%"
           role="group"
-          display="flex" 
+          display="flex"
           bgColor="custom.blue-dark"
-          align="center" 
+          align="center"
           mx="auto"
-          _hover= {{ bgColor: "custom.blue-light", cursor: "pointer" }}
-          transition= "background"
+          _hover={{ bgColor: "custom.blue-light", cursor: "pointer" }}
+          transition="background"
           transitionDuration="0.2s"
-          pl="4" 
+          pl="4"
           borderRadius={4}
           height="9"
           alignItems="center"
           onClick={() => signOut()}
         >
-          <Icon 
-            as={FiLogOut} 
+          <Icon
+            as={FiLogOut}
             fontSize="1.125rem"
-            color="custom.gray-light" 
-            transition= "color"
+            color="custom.gray-light"
+            transition="color"
             transitionDuration="0.2s"
             _groupHover={{ color: "white" }}
           />
-          <Text 
+          <Text
             ml="3"
             pt="2px"
             fontWeight="medium"
             color="custom.gray-light"
-            transition= "color"
+            transition="color"
             transitionDuration="0.2s"
             _groupHover={{ color: "white" }}
             align="center"

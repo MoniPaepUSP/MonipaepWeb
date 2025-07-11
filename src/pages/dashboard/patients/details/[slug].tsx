@@ -18,10 +18,10 @@ interface PatientDetailsProps {
 
 export default function PatientDetails({ patientId }: PatientDetailsProps) {
   const { data, isLoading, isFetching, error } = usePatientDetails({ patientId })
-  const { 
-    isOpen: isOpenExcludeAlert, 
-    onOpen: onOpenExcludeAlert, 
-    onClose: onCloseExcludeAlert 
+  const {
+    isOpen: isOpenExcludeAlert,
+    onOpen: onOpenExcludeAlert,
+    onClose: onCloseExcludeAlert
   } = useDisclosure()
 
   return (
@@ -30,9 +30,9 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
         <title>MoniPaEp | Detalhes do paciente</title>
       </Head>
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column">
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg" mt="10"/>
+            <Spinner size="lg" mt="10" />
           </Box>
         ) : error ? (
           <Box w="100%" display="flex" justifyContent="center" alignItems="center">
@@ -40,17 +40,17 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
           </Box>
         ) : (
           <>
-            <PatientExcludeAlert 
+            <PatientExcludeAlert
               isOpen={isOpenExcludeAlert}
               onClose={onCloseExcludeAlert}
               patientId={patientId}
             />
 
             <Flex pl="5">
-              <Icon 
-                as={IoChevronBack} 
-                fontSize="22px" 
-                mt="9" 
+              <Icon
+                as={IoChevronBack}
+                fontSize="22px"
+                mt="9"
                 mr="6"
                 _hover={{ cursor: 'pointer' }}
                 onClick={() => Router.back()}
@@ -67,7 +67,7 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
                   </Flex>
                   <Flex>
                     <Text fontWeight="bold">CPF:&nbsp;</Text>
-                    <Text>{data?.patients[0].CPF}</Text>
+                    <Text>{data?.patients[0].cpf}</Text>
                   </Flex>
                   <Flex>
                     <Text fontWeight="bold">Email:&nbsp;</Text>
@@ -82,16 +82,12 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
                     <Text>{data?.patients[0].phone}</Text>
                   </Flex>
                   <Flex>
-                    <Text fontWeight="bold">Endereço residencial:&nbsp;</Text>
-                    <Text>{data?.patients[0].homeAddress}, {data?.patients[0].houseNumber}</Text>
+                    <Text fontWeight="bold">Rua:&nbsp;</Text>
+                    <Text>{data?.patients[0].street}, {data?.patients[0].houseNumber}</Text>
                   </Flex>
                   <Flex>
-                    <Text fontWeight="bold">Bairro residencial:&nbsp;</Text>
+                    <Text fontWeight="bold">Bairro:&nbsp;</Text>
                     <Text>{data?.patients[0].neighborhood}</Text>
-                  </Flex>
-                  <Flex>
-                    <Text fontWeight="bold">Endereço do trabalho:&nbsp;</Text>
-                    <Text>{data?.patients[0].workAddress}</Text>
                   </Flex>
                   <Flex>
                     <Text fontWeight="bold">Plano de saúde:&nbsp;</Text>
@@ -103,7 +99,7 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
                   </Flex>
                   <Flex>
                     <Text fontWeight="bold">Status da conta:&nbsp;</Text>
-                    <Text>{data?.patients[0].activeAccount ? 'Ativa': 'Inativa'}</Text>
+                    <Text>{data?.patients[0].activeAccount ? 'Ativa' : 'Inativa'}</Text>
                   </Flex>
                   <Flex>
                     <Text fontWeight="bold">Data de registro no aplicativo:&nbsp;</Text>
@@ -111,11 +107,11 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
                   </Flex>
                 </VStack>
                 <Can roles={['general.admin']}>
-                  <Button 
+                  <Button
                     colorScheme="red"
                     mt="5"
                     w="200px"
-                    leftIcon={<Icon as={BiTrash} fontSize="22"/>}
+                    leftIcon={<Icon as={BiTrash} fontSize="22" />}
                     onClick={onOpenExcludeAlert}
                   >
                     Excluir paciente
@@ -132,11 +128,11 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
 
 PatientDetails.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   const params = ctx.params
-  return { 
-    props: { 
-      patientId: params?.slug 
-    } 
+  return {
+    props: {
+      patientId: params?.slug
+    }
   }
 })

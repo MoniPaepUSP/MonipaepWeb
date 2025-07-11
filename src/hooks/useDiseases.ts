@@ -50,7 +50,6 @@ export async function getDiseases(page: number, filter?: string) {
     params = { ...params, name: filter }
   }
   const { data } = await api.get<GetDiseasesResponse>('/disease', { params })
-  console.log(data)
   return data
 }
 
