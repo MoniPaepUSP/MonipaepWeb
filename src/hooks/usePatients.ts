@@ -4,19 +4,25 @@ import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
 
-type Patient = {
+export type Patient = {
   id: string;
   name: string;
-  CPF: string;
+  cpf: string;
   email: string;
   gender: string;
   phone: string;
-  neighborhood: string;
   birthdate: string;
+  cep: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+  street: string;
+  houseNumber: number;
+  hasHealthPlan: boolean;
   status: string;
   activeAccount: boolean;
-  hasHealthPlan: boolean;
   createdAt: string;
+  updatedAt: string;
 }
 
 type GetPatientsResponse = {
@@ -44,8 +50,8 @@ export async function getPatients(page: number, filter?: FilterPatient) {
     const createdAtFormatted = format(parseISO(patient.createdAt), 'P', { locale: ptBR })
     const birthdateFormatted = format(parseISO(patient.birthdate), 'P', { locale: ptBR })
     const formattedCPF = 
-      patient.CPF.slice(0, 3) + "." + patient.CPF.slice(3, 6) + "."
-      + patient.CPF.slice(6, 9) + "-" + patient.CPF.slice(9, 12)
+      patient.cpf.slice(0, 3) + "." + patient.cpf.slice(3, 6) + "."
+      + patient.cpf.slice(6, 9) + "-" + patient.cpf.slice(9, 12)
     return {
       ...patient,
       CPF: formattedCPF,

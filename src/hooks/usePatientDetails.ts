@@ -3,24 +3,7 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
-
-type Patient = {
-  id: string;
-  activeAccount: boolean;
-  name: string;
-  CPF: string;
-  email: string;
-  gender: string;
-  phone: string;
-  workAddress: string;
-  homeAddress: string;
-  houseNumber: number;
-  neighborhood: string;
-  hasHealthPlan: boolean;
-  birthdate: string;
-  status: string;
-  createdAt: string;
-}
+import { Patient } from "./usePatients";
 
 type GetPatientDetailsResponse = {
   patients: Patient[],
@@ -36,8 +19,8 @@ export async function getPatients(patientId: string) {
     const createdAtFormatted = format(parseISO(pacient.createdAt), 'P', { locale: ptBR })
     const birthdateFormatted = format(parseISO(pacient.birthdate), 'P', { locale: ptBR })
     const formattedCPF = 
-      pacient.CPF.slice(0, 3) + "." + pacient.CPF.slice(3, 6) + "."
-      + pacient.CPF.slice(6, 9) + "-" + pacient.CPF.slice(9, 12)
+      pacient.cpf.slice(0, 3) + "." + pacient.cpf.slice(3, 6) + "."
+      + pacient.cpf.slice(6, 9) + "-" + pacient.cpf.slice(9, 12)
     return {
       ...pacient,
       CPF: formattedCPF,

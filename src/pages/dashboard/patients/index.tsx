@@ -3,24 +3,24 @@ import Head from "next/head"
 import NextLink from "next/link"
 import { debounce } from "ts-debounce"
 
-import { 
-  Badge, 
-  Box, 
-  Flex, 
-  Heading, 
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
   Link,
-  Table, 
-  Tbody, 
-  Td, 
-  Text, 
-  Th, 
-  Thead, 
-  Tr, 
-  Select, 
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Select,
   Spinner,
 } from "@chakra-ui/react";
 import { MdSearch } from 'react-icons/md'
@@ -31,11 +31,11 @@ import { Pagination } from "../../../components/Pagination";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 
 function getBadgeColor(status: string) {
-  if(status === "Saudável") {
+  if (status === "Saudável") {
     return "green"
-  } else if(status === "Suspeito") {
+  } else if (status === "Suspeito") {
     return "yellow"
-  } else if(status === "Infectado") {
+  } else if (status === "Infectado") {
     return "red"
   } else {
     return "purple"
@@ -46,7 +46,7 @@ export default function Patients() {
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState('name')
   const [search, setSearch] = useState('')
-  const { data , isLoading, isFetching, error } = usePatients({ page, filter: [filter, search]})
+  const { data, isLoading, isFetching, error } = usePatients({ page, filter: [filter, search] })
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setPage(1)
@@ -54,9 +54,9 @@ export default function Patients() {
   }, [])
 
   const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)  
-  , [handleChangeInput]) 
-  
+    () => debounce(handleChangeInput, 600)
+    , [handleChangeInput])
+
   return (
     <>
       <Head>
@@ -65,11 +65,11 @@ export default function Patients() {
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
         <Heading ml="8" my="6">
           Pacientes
-          { !isLoading && isFetching && <Spinner ml="4"/> }
+          {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg"/>
+            <Spinner size="lg" />
           </Box>
         ) : error ? (
           <Box w="100%" display="flex" justifyContent="center" alignItems="center">
@@ -80,23 +80,23 @@ export default function Patients() {
             <Flex mx="8" mb="8">
               <InputGroup w="30">
                 <InputLeftElement>
-                  <Icon as={MdSearch} fontSize="xl" color="gray.400"/>
+                  <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
-                <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler}/>
+                <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
-              <Select w="32" onChange={e => {setFilter(e.target.value)}} ml="2">
+              <Select w="32" onChange={e => { setFilter(e.target.value) }} ml="2">
                 <option value="name">Nome</option>
                 <option value="cpf">CPF</option>
                 <option value="gender">Gênero</option>
                 <option value="neighborhood">Bairro</option>
                 <option value="status">Status</option>
-              </Select>            
+              </Select>
             </Flex>
 
             <Flex direction="column" w="100%" overflow="auto" px="8">
-              { data?.totalPatients === 0 ? (
+              {data?.totalPatients === 0 ? (
                 <Text mt="2">
-                  { search === '' ? 
+                  {search === '' ?
                     'Não existem pacientes registrados até o momento.' :
                     'A busca não encontrou nenhum paciente com esse filtro.'
                   }
@@ -117,10 +117,10 @@ export default function Patients() {
                     </Thead>
 
                     <Tbody>
-                      { data?.patients.map(patient => (
-                        <Tr 
-                          key={patient.id} 
-                          _hover={{ bgColor: 'gray.50' }} 
+                      {data?.patients.map(patient => (
+                        <Tr
+                          key={patient.id}
+                          _hover={{ bgColor: 'gray.50' }}
                         >
                           <Td>
                             <NextLink href={`/dashboard/patients/details/${patient.id}`} passHref>
@@ -133,7 +133,7 @@ export default function Patients() {
                             <Text>{patient.gender}</Text>
                           </Td>
                           <Td>
-                            <Text>{patient.CPF}</Text>
+                            <Text>{patient.cpf}</Text>
                           </Td>
                           <Td>
                             <Text>{patient.birthdate}</Text>
@@ -155,11 +155,11 @@ export default function Patients() {
                       ))}
                     </Tbody>
                   </Table>
-                  
+
                   <Box w="100%" mt="3" mb="5">
-                    <Pagination 
-                      currentPage={page} 
-                      totalRegisters={data?.totalPatients} 
+                    <Pagination
+                      currentPage={page}
+                      totalRegisters={data?.totalPatients}
                       onPageChange={setPage}
                     />
                   </Box>
@@ -175,6 +175,6 @@ export default function Patients() {
 
 Patients.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return { props: {} }
 })

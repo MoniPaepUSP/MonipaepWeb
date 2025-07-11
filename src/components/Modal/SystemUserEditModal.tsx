@@ -18,18 +18,7 @@ import {
 
 import { useCan } from '../../hooks/useCan';
 import { api } from '../../services/apiClient';
-
-type SystemUser = {
-  systemUser: {
-    id: string;
-    name: string;
-    email: string;
-    department: string;
-  };
-  authorized: boolean;
-  localAdm: boolean;
-  generalAdm: boolean;
-}
+import { SystemUser } from '../../hooks/useSystemUsers';
 
 interface SystemUserEditModalProps {
   isOpen: boolean;
@@ -39,7 +28,7 @@ interface SystemUserEditModalProps {
 }
 
 export function SystemUserEditModal({ isOpen, onClose, systemUser, refetchList }: SystemUserEditModalProps) {
-  const [department, setDepartment] = useState(systemUser.systemUser.department)
+  const [department, setDepartment] = useState(systemUser.user.department)
   const [authorized, setAuthorized] = useState(systemUser.authorized)
   const [localAdm, setLocalAdm] = useState(systemUser.localAdm)
   const [generalAdm, setGeneralAdm] = useState(systemUser.generalAdm)
@@ -49,14 +38,14 @@ export function SystemUserEditModal({ isOpen, onClose, systemUser, refetchList }
   const isGeneralAdm = useCan({ roles: ['general.admin'] })
   
   useEffect(() => {
-    setDepartment(systemUser.systemUser.department)
+    setDepartment(systemUser.user.department)
     setAuthorized(systemUser.authorized)
     setLocalAdm(systemUser.localAdm)
     setGeneralAdm(systemUser.generalAdm)
   }, [systemUser])
 
   function handleClose() {
-    setDepartment(systemUser.systemUser.department)
+    setDepartment(systemUser.user.department)
     setAuthorized(systemUser.authorized)
     setLocalAdm(systemUser.localAdm)
     setGeneralAdm(systemUser.generalAdm)
@@ -111,10 +100,10 @@ export function SystemUserEditModal({ isOpen, onClose, systemUser, refetchList }
 
     setIsUpdating(true)
 
-    if(department !== systemUser.systemUser.department && (department === "USM" || department === "SVS")) {
+    if(department !== systemUser.user.department && (department === "USM" || department === "SVS")) {
       if(!permissionsHasChanged) {
         try {
-          const response = await api.put(`/systemuser/${systemUser.systemUser.id}`, { department })
+          const response = await api.put(`/systemuser/${systemUser.user.id}`, { department })
           toast({
             title: "Sucesso na alteração do usuário",
             description: response.data?.success,
@@ -135,8 +124,8 @@ export function SystemUserEditModal({ isOpen, onClose, systemUser, refetchList }
       } else {
         try {
           const [userResponse, permissionsResponse] = await Promise.all([
-            api.put(`/systemuser/${systemUser.systemUser.id}`, { department }),
-            api.put(`/permissions/${systemUser.systemUser.id}`, body)
+            api.put(`/systemuser/${systemUser.user.id}`, { department }),
+            api.put(`/permissions/${systemUser.user.id}`, body)
           ])
           toast({
             title: "Sucesso na alteração do usuário",
@@ -159,7 +148,7 @@ export function SystemUserEditModal({ isOpen, onClose, systemUser, refetchList }
     } else {
       if(permissionsHasChanged) {
         try {
-          const response = await api.put(`/permissions/${systemUser.systemUser.id}`, body)
+          const response = await api.put(`/permissions/${systemUser.user.id}`, body)
           toast({
             title: "Sucesso na alteração do usuário",
             description: response.data?.success,

@@ -2,8 +2,10 @@ import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
 
-type Symptom = {
-  symptom: string;
+export type Symptom = {
+  id: string;
+  name: string;
+  description: string;
 }
 
 type GetSymptomsResponse = {
@@ -18,16 +20,16 @@ interface UseSymptomsProps {
 
 export async function getSymptoms(page: number, filter?: string) {
   let params: any = { page }
-  if(filter) {
+  if (filter) {
     params = { ...params, symptom: filter }
   }
   const { data } = await api.get<GetSymptomsResponse>('/symptom', { params })
   return data
 }
 
-export function useSymptoms({ page, filter = '' }: UseSymptomsProps) { 
+export function useSymptoms({ page, filter = '' }: UseSymptomsProps) {
   return useQuery(['symptoms', page, filter], () => {
-    if(filter !== '') {
+    if (filter !== '') {
       return getSymptoms(page, filter)
     }
     return getSymptoms(page)

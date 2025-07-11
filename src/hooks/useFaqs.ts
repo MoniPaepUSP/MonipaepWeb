@@ -2,15 +2,21 @@ import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
 
+type FaqGroup = {
+  id: string;
+  name: string;
+  faqs: Faq[];
+}
+
 type Faq = {
   id: string;
   question: string;
   answer: string;
 }
 
-type GetFaqsResponse = {
-  faqs: Faq[],
-  totalFaqs: number,
+type GetFaqGroupsResponse = {
+  groups: FaqGroup[],
+  totalGroups: number,
 }
 
 interface UseFaqsProps {
@@ -22,7 +28,7 @@ export async function getFaqs(filter?: string) {
   if(filter !== '') {
     params = { question: filter }
   }
-  const { data } = await api.get<GetFaqsResponse>('/faq', { params })
+  const { data } = await api.get<GetFaqGroupsResponse>('/faqgroup', { params })
   return data
 }
 

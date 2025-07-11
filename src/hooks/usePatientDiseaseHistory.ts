@@ -3,13 +3,14 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
+import { Disease } from "./useDiseases";
 
 type DiseaseOccurrence = {
   id: string;
-  disease_name: string;
   diagnosis: string;
-  date_start: string;
-  date_end: string | null;
+  disease: Disease;
+  dateStart: string;
+  dateEnd: string | null;
   status: string;
 }
 
@@ -39,8 +40,8 @@ export async function getPatientDiseaseHistory(page: number, patientId: string, 
   const { data } = await api.get<GetDiseaseOccurrencesResponse>('/diseaseoccurrence', { params })
 
   const formattedData = data.diseaseOccurrences.map(diseaseOccurrence => {
-    const dateStartFormatted = format(parseISO(diseaseOccurrence.date_start), 'P', { locale: ptBR })
-    let dateEndFormatted = diseaseOccurrence.date_end
+    const dateStartFormatted = format(parseISO(diseaseOccurrence.dateStart), 'P', { locale: ptBR })
+    let dateEndFormatted = diseaseOccurrence.dateEnd
 
     if(dateEndFormatted) {
       dateEndFormatted = format(parseISO(dateEndFormatted), 'P', { locale: ptBR })

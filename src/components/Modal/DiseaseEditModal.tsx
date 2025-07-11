@@ -15,12 +15,7 @@ import {
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
-
-type Disease = {
-  name: string;
-  infected_Monitoring_Days: number;
-  suspect_Monitoring_Days: number;
-}
+import { Disease } from '../../hooks/useDiseases';
 
 interface DiseaseModalProps {
   isOpen: boolean;
@@ -31,16 +26,16 @@ interface DiseaseModalProps {
 
 export function DiseaseEditModal({ isOpen, onClose, disease, refetchList }: DiseaseModalProps) {
   const [diseaseName, setDiseaseName] = useState(disease.name)
-  const [infectedDays, setInfectedDays] = useState(disease.infected_Monitoring_Days)
-  const [suspectDays, setSuspectDays] = useState(disease.suspect_Monitoring_Days)
+  const [infectedDays, setInfectedDays] = useState(disease.infectedMonitoringDays)
+  const [suspectDays, setSuspectDays] = useState(disease.suspectedMonitoringDays)
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
     setDiseaseName(disease.name)
-    setInfectedDays(disease.infected_Monitoring_Days)
-    setSuspectDays(disease.suspect_Monitoring_Days)
+    setInfectedDays(disease.infectedMonitoringDays)
+    setSuspectDays(disease.suspectedMonitoringDays)
   }, [disease])
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
@@ -66,8 +61,8 @@ export function DiseaseEditModal({ isOpen, onClose, disease, refetchList }: Dise
 
   function handleClose() {
     setDiseaseName(disease.name)
-    setInfectedDays(disease.infected_Monitoring_Days)
-    setSuspectDays(disease.suspect_Monitoring_Days)
+    setInfectedDays(disease.infectedMonitoringDays)
+    setSuspectDays(disease.suspectedMonitoringDays)
     setTouched(false)
     onClose()
   }
@@ -75,8 +70,8 @@ export function DiseaseEditModal({ isOpen, onClose, disease, refetchList }: Dise
   async function handleDiseaseUpdate() {
     if(diseaseName !== '' && infectedDays > 0 && suspectDays > 0) {
       if( diseaseName === disease.name && 
-          infectedDays === disease.infected_Monitoring_Days &&
-          suspectDays === disease.suspect_Monitoring_Days) {
+          infectedDays === disease.infectedMonitoringDays &&
+          suspectDays === disease.suspectedMonitoringDays) {
         toast({
           title: "Erro na alteração da doença",
           description: "Campos sem nenhuma alteração",
@@ -88,8 +83,8 @@ export function DiseaseEditModal({ isOpen, onClose, disease, refetchList }: Dise
         try {
           const response = await api.put(`/disease/${disease.name}`, {
             name: diseaseName,
-            infected_Monitoring_Days: infectedDays,
-            suspect_Monitoring_Days: suspectDays,
+            infectedMonitoringDays: infectedDays,
+            suspectedMonitoringDays: suspectDays,
           })
           toast({
             title: "Sucesso",

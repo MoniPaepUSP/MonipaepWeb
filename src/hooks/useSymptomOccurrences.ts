@@ -3,21 +3,7 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
-
-type SymptomOccurrence = {
-  id: string;
-  patient_id: string;
-  registered_date: string;
-  patient: {
-    name: string;
-    email: string;
-  };
-}
-
-type GetSymptomOccurrencesResponse = {
-  symptomOccurrences: SymptomOccurrence[],
-  totalSymptomOccurrences: number,
-}
+import { SymptomOccurrencesResponse } from "./usePatientSymptomOccurrences";
 
 interface UseSymptomOccurrencesProps {
   page: number;
@@ -29,16 +15,17 @@ export async function getSymptomOccurrences(page: number, filter?: string) {
   if(filter) {
     params = { ...params, patient_name: filter }
   }
-  const { data } = await api.get<GetSymptomOccurrencesResponse>('/symptomoccurrence/unassigned', { params })
+  
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/unassigned', { params })
   const formattedData = data.symptomOccurrences.map(occurrence => {
-    const formattedDate = format(parseISO(occurrence.registered_date), 'Pp', { locale: ptBR })
+    const formattedDate = format(parseISO(occurrence.registeredDate), 'Pp', { locale: ptBR })
     return {
       ...occurrence,
       registered_date: formattedDate.replace(",", " às")
     }
   })
 
-  const formattedResponse: GetSymptomOccurrencesResponse = {
+  const formattedResponse: SymptomOccurrencesResponse = {
     symptomOccurrences: formattedData,
     totalSymptomOccurrences: data.totalSymptomOccurrences
   }
