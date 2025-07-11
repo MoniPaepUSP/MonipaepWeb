@@ -170,7 +170,7 @@ export default function Diseases() {
 
                     <Tbody>
                       {data?.diseases.map(disease => (
-                        <Tr key={disease.name} _hover={{ bgColor: 'gray.50' }}>
+                        <Tr key={disease.id} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
                             <Text>{disease.name}</Text>
                           </Td>

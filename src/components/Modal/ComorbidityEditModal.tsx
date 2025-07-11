@@ -15,26 +15,26 @@ import {
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
-import { Symptom } from '../../hooks/useSymptoms';
+import { Comorbidity } from '../../hooks/useComorbidities';
 
-interface SymptomModalProps {
+interface ComorbidityModalProps {
   isOpen: boolean;
-  symptom: Symptom;
+  comorbidity: Comorbidity;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: SymptomModalProps) {
-  const [name, setName] = useState(symptom.name || '')
-  const [description, setDescription] = useState(symptom.description || '')
+export function ComorbidityEditModal({ isOpen, onClose, comorbidity, refetchList }: ComorbidityModalProps) {
+  const [name, setName] = useState(comorbidity.name || '')
+  const [description, setDescription] = useState(comorbidity.description || '')
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
-    setName(symptom.name || '')
-    setDescription(symptom.description || '')
-  }, [symptom])
+    setName(comorbidity.name || '')
+    setDescription(comorbidity.description || '')
+  }, [comorbidity])
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setName(event.target.value)
@@ -57,12 +57,12 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
 
   async function handleUpdate() {
     if (name !== '' && description !== '') {
-      if (name !== symptom.name || description !== symptom.description) {
+      if (name !== comorbidity.name || description !== comorbidity.description) {
         setIsUpdating(true)
         try {
-          const response = await api.put(`/symptom/${symptom.id}`, { name, description })
+          const response = await api.put(`/comorbidity/${comorbidity.id}`, { name, description })
           toast({
-            title: "Sucesso na alteração do sintoma",
+            title: "Sucesso na alteração da comorbidade",
             description: response.data?.success,
             status: "success",
             isClosable: true
@@ -72,8 +72,8 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
           refetchList()
         } catch (error: any) {
           toast({
-            title: "Erro na alteração do sintoma",
-            description: "Sintoma já registrado no sistema",
+            title: "Erro na alteração da comorbidade",
+            description: "Comorbidade já registrado no sistema",
             status: "error",
             isClosable: true
           })
@@ -81,16 +81,16 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
         setIsUpdating(false)
       } else {
         toast({
-          title: "Erro na alteração do sintoma",
-          description: "Sintoma sem alteração",
+          title: "Erro na alteração da comorbidade",
+          description: "Comorbidade sem alteração",
           status: "error",
           isClosable: true
         })
       }
     } else {
       toast({
-        title: "Erro na alteração do sintoma",
-        description: "Preencha o campo com o nome do sintoma",
+        title: "Erro na alteração da comorbidade",
+        description: "Preencha o campo com o nome da comorbidade",
         status: "error",
         isClosable: true
       })
@@ -108,10 +108,10 @@ export function SymptomEditModal({ isOpen, onClose, symptom, refetchList }: Symp
     >
       <ModalOverlay>
         <ModalContent height="auto" width="500px">
-          <ModalHeader textAlign="center">Editar sintoma</ModalHeader>
+          <ModalHeader textAlign="center">Editar comorbidade</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="2">Nome do sintoma</Text>
+            <Text fontWeight="semibold" mb="2">Nome da comorbidade</Text>
             <Input value={name} mb="2" onChange={handleNameInputChanged} />
             <Text fontWeight="semibold" mb="2">Descrição</Text>
             <Textarea value={description} mb="2" onChange={handleDescriptionInputChanged} />

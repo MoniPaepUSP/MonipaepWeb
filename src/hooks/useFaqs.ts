@@ -2,19 +2,19 @@ import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
 
-type FaqGroup = {
-  id: string;
-  name: string;
-  faqs: Faq[];
-}
-
-type Faq = {
+export type Faq = {
   id: string;
   question: string;
   answer: string;
 }
 
-type GetFaqGroupsResponse = {
+export type FaqGroup = {
+  id: string;
+  name: string;
+  faqs: Faq[];
+}
+
+export type GetFaqGroupsResponse = {
   groups: FaqGroup[],
   totalGroups: number,
 }

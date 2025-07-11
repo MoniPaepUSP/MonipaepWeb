@@ -16,13 +16,13 @@ import {
 
 import { api } from '../../services/apiClient';
 
-interface SymptomAddModalProps {
+interface SpecialConditionAddModalProps {
   isOpen: boolean;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModalProps) {
+export function SpecialConditionAddModal({ isOpen, onClose, refetchList }: SpecialConditionAddModalProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [touched, setTouched] = useState(false)
@@ -50,13 +50,13 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
     onClose()
   }
 
-  async function handleSymptomCreation() {
+  async function handleSpecialConditionCreation() {
     if (name !== '' && description !== '') {
       setIsPosting(true)
       try {
-        const response = await api.post('/symptom/', { name, description })
+        const response = await api.post('/specialcondition/', { name, description })
         toast({
-          title: "Sucesso na criação do sintoma",
+          title: "Sucesso na criação da condição especial",
           description: response.data?.success,
           status: "success",
           isClosable: true
@@ -65,8 +65,8 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
         refetchList()
       } catch (error: any) {
         toast({
-          title: "Erro na criação do sintoma",
-          description: "Sintoma já registrado no sistema",
+          title: "Erro na criação da condição especial",
+          description: "Condição especial já registrado no sistema",
           status: "error",
           isClosable: true
         })
@@ -74,8 +74,8 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
       setIsPosting(false)
     } else {
       toast({
-        title: "Erro na criação do sintoma",
-        description: "Preencha o campo com o nome do sintoma",
+        title: "Erro na criação da condição especial",
+        description: "Preencha o campo com o nome da condição especial",
         status: "error",
         isClosable: true
       })
@@ -93,18 +93,18 @@ export function SymptomAddModal({ isOpen, onClose, refetchList }: SymptomAddModa
     >
       <ModalOverlay>
         <ModalContent height="auto" width="500px">
-          <ModalHeader textAlign="center">Adicionar sintoma</ModalHeader>
+          <ModalHeader textAlign="center">Adicionar condição especial</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="2">Nome do sintoma</Text>
+            <Text fontWeight="semibold" mb="2">Nome da condição especial</Text>
             <Input value={name} mb="2" onChange={handleNameInputChanged} />
-            <Text fontWeight="semibold" mb="2">Descrição do sintoma</Text>
+            <Text fontWeight="semibold" mb="2">Descrição da condição especial</Text>
             <Textarea value={description} mb="2" onChange={handleDescriptionInputChanged} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
             <Button
-              onClick={handleSymptomCreation}
+              onClick={handleSpecialConditionCreation}
               colorScheme="blue"
               disabled={!touched}
               isLoading={isPosting}

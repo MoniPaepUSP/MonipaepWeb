@@ -1,9 +1,9 @@
 import { Box, Flex, Heading, Icon } from "@chakra-ui/react";
 
 import { AiOutlineDatabase } from "react-icons/ai"
-import { BiArchive, BiBookHeart, BiClinic, BiHealth } from "react-icons/bi"
+import { BiArchive, BiBookHeart, BiClinic, BiHealth, BiHeart } from "react-icons/bi"
 import { FiUsers } from "react-icons/fi"
-import { RiQuestionAnswerLine, RiHealthBookLine } from "react-icons/ri"
+import { RiQuestionAnswerLine, RiHealthBookLine, RiMentalHealthFill } from "react-icons/ri"
 import { HiOutlineClipboardList } from "react-icons/hi"
 
 import { Can } from "../Can";
@@ -13,10 +13,11 @@ import { AccountSection } from "./AccountSection";
 
 export function Sidebar() {
   return (
-    <Box 
-      as="aside" 
-      w="64" 
-      h="100%" 
+    <Box
+      as="aside"
+      w="72"
+      h="100vh"
+      overflowY="auto"
       pb="9"
       bgColor="custom.blue-dark"
       display="flex"
@@ -25,14 +26,15 @@ export function Sidebar() {
       alignItems="center"
       boxShadow="base"
       position="fixed"
+      left="auto"
     >
       <Flex align="center" my="5">
-        <Icon as={BiBookHeart} color="custom.blue-logo" height="30px" width="30px" mr="2"/>
-        <Heading 
+        <Icon as={BiBookHeart} color="custom.blue-logo" height="30px" width="30px" mr="2" />
+        <Heading
           color="custom.blue-logo"
-          fontSize="3xl" 
-          fontWeight="500" 
-          fontFamily="Comfortaa" 
+          fontSize="3xl"
+          fontWeight="500"
+          fontFamily="Comfortaa"
           pt="6px"
         >
           MoniPaEp
@@ -49,7 +51,7 @@ export function Sidebar() {
         <NavLink href="/dashboard/symptomoccurrences" icon={HiOutlineClipboardList}>
           Ocorrências de sintomas
         </NavLink>
-        
+
       </NavSection>
       <NavSection title="GERENCIAMENTO">
         <NavLink href="/dashboard/faqs" icon={RiQuestionAnswerLine}>
@@ -64,11 +66,14 @@ export function Sidebar() {
         <NavLink href="/dashboard/symptoms" icon={AiOutlineDatabase}>
           Sintomas
         </NavLink>
-        <NavLink href="/dashboard/healthprotocols" icon={BiHealth}>
-          Protocolos de saúde
+        <NavLink href="/dashboard/comorbidities" icon={RiMentalHealthFill}>
+          Comorbidades
+        </NavLink>
+        <NavLink href="/dashboard/specialconditions" icon={BiHealth}>
+          Condições especiais
         </NavLink>
       </NavSection>
-      
+
       <Can roles={["local.admin", "general.admin"]}>
         <NavSection title="PAINEL DE ADMINISTRADOR">
           <NavLink href="/dashboard/systemusers" icon={FiUsers}>

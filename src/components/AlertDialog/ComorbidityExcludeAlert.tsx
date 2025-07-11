@@ -12,24 +12,24 @@ import {
 
 import { api } from "../../services/apiClient";
 
-interface SymptomExcludeAlertProps {
+interface ComorbidityExcludeAlertProps {
   isOpen: boolean;
-  symptomId: string;
+  comorbidityId: string;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function SymptomExcludeAlert({ isOpen, onClose, symptomId, refetchList }: SymptomExcludeAlertProps) {
+export function ComorbidityExcludeAlert({ isOpen, onClose, comorbidityId, refetchList }: ComorbidityExcludeAlertProps) {
   const [isDeletting, setIsDeletting] = useState(false)
   const cancelRef = useRef(null)
   const toast = useToast()
 
-  async function handleSymptomExclusion() {
+  async function handleComorbidityExclusion() {
     setIsDeletting(true)
     try {
-      const response = await api.delete(`/symptom/${symptomId}`)
+      const response = await api.delete(`/comorbidity/${comorbidityId}`)
       toast({
-        title: "Sucesso na exclusão do sintoma",
+        title: "Sucesso na exclusão da comorbidade",
         description: response.data?.success,
         status: "success",
         isClosable: true
@@ -62,13 +62,13 @@ export function SymptomExcludeAlert({ isOpen, onClose, symptomId, refetchList }:
             Confirmação necessária
           </AlertDialogHeader>
           <AlertDialogBody>
-            Tem certeza que deseja excluir este sintoma?
+            Tem certeza que deseja excluir esta comorbidade?
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose} variant="outline">
               Cancelar
             </Button>
-            <Button colorScheme="red" onClick={handleSymptomExclusion} ml={3} isLoading={isDeletting}>
+            <Button colorScheme="red" onClick={handleComorbidityExclusion} ml={3} isLoading={isDeletting}>
               Excluir
             </Button>
           </AlertDialogFooter>

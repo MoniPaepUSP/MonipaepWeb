@@ -16,6 +16,7 @@ import {
 
 import { googleApi } from '../../services/googleApi';
 import { api } from '../../services/apiClient';
+import { Usm } from '../../hooks/useUsms';
 
 const Map = dynamic(() => import('../Map/AddUsmMap'), {
   ssr: false
@@ -24,14 +25,6 @@ const Map = dynamic(() => import('../Map/AddUsmMap'), {
 type Location = {
   lat: number;
   lng: number;
-}
-
-type Usm = {
-  name: string;
-  address: string;
-	neighborhood: string;
-	latitude: number;
-	longitude: number;
 }
 
 interface UsmEditModalProps {
@@ -43,7 +36,7 @@ interface UsmEditModalProps {
 
 export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModalProps) {
   const [usmName, setUsmName] = useState(usm.name)
-  const [usmAddress, setUsmAddress] = useState(usm.address)
+  const [usmAddress, setUsmAddress] = useState(usm.formattedAddress)
   const [usmNeighborhood, setUsmNeighborhood] = useState(usm.neighborhood)
   const [coords, setCoords] = useState<Location>({ lat: usm.latitude, lng: usm.longitude })
   const [touched, setTouched] = useState(false)
@@ -53,28 +46,28 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
 
   useEffect(() => {
     setUsmName(usm.name)
-    setUsmAddress(usm.address)
+    setUsmAddress(usm.formattedAddress)
     setUsmNeighborhood(usm.neighborhood)
     setCoords({ lat: usm.latitude, lng: usm.longitude })
   }, [usm])
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setUsmName(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleAddressInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setUsmAddress(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleNeighborhoodInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setUsmNeighborhood(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
@@ -86,7 +79,7 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
 
   function handleClose() {
     setUsmName(usm.name)
-    setUsmAddress(usm.address)
+    setUsmAddress(usm.formattedAddress)
     setUsmNeighborhood(usm.neighborhood)
     setCoords({ lat: usm.latitude, lng: usm.longitude })
     setTouched(false)
@@ -94,7 +87,7 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
   }
 
   async function handleCoordinatesFetch() {
-    if(usmAddress !== '') {
+    if (usmAddress !== '') {
       setIsFetching(true)
       const { data } = await googleApi.get('/maps/api/geocode/json', {
         params: {
@@ -103,7 +96,7 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
           language: 'pt-BR'
         }
       })
-      if(data.status === 'OK') {
+      if (data.status === 'OK') {
         setCoords({
           lat: data.results[0].geometry.location.lat,
           lng: data.results[0].geometry.location.lng
@@ -128,9 +121,9 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
   }
 
   async function handleUsmUpdate() {
-    if(usmName !== '' && usmAddress !== '' && usmNeighborhood !== '' && coords) {
-      if(usmName === usm.name && usmAddress === usm.address && usmNeighborhood === usm.neighborhood 
-          && coords.lat === usm.latitude && coords.lng === usm.longitude) {
+    if (usmName !== '' && usmAddress !== '' && usmNeighborhood !== '' && coords) {
+      if (usmName === usm.name && usmAddress === usm.formattedAddress && usmNeighborhood === usm.neighborhood
+        && coords.lat === usm.latitude && coords.lng === usm.longitude) {
         toast({
           title: "Erro na alteração da unidade",
           description: "Campos sem nenhuma alteração",
@@ -174,14 +167,14 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
@@ -190,22 +183,22 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
           <ModalCloseButton />
           <ModalBody w="100%" height="100%">
             <Text fontWeight="semibold" mb="3">Nome da unidade</Text>
-            <Input value={usmName} mb="4" onChange={handleNameInputChanged}/>
+            <Input value={usmName} mb="4" onChange={handleNameInputChanged} />
             <Text fontWeight="semibold" mb="3">Endereço</Text>
-            <Input value={usmAddress} mb="4" onChange={handleAddressInputChanged}/>
+            <Input value={usmAddress} mb="4" onChange={handleAddressInputChanged} />
             <Text fontWeight="semibold" mb="3">Bairro</Text>
-            <Input value={usmNeighborhood} mb="4" onChange={handleNeighborhoodInputChanged}/>
+            <Input value={usmNeighborhood} mb="4" onChange={handleNeighborhoodInputChanged} />
             <Button onClick={handleCoordinatesFetch} mb="4" w="100%" colorScheme="pink" isLoading={isFetching}>
               Buscar coordenadas
             </Button>
-            { coords && <Map center={coords} updatePosition={updatePosition}/> }
+            {coords && <Map center={coords} updatePosition={updatePosition} />}
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleUsmUpdate} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleUsmUpdate}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isUpdating}
             >
               Atualizar

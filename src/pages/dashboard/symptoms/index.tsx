@@ -106,7 +106,7 @@ export default function Symptoms() {
               <SymptomEditModal
                 isOpen={isOpenEditModal}
                 onClose={onCloseEditModal}
-                symptom={symptomToBeEdited.id}
+                symptom={symptomToBeEdited}
                 refetchList={refetch}
               />
             )}
@@ -115,7 +115,7 @@ export default function Symptoms() {
               <SymptomExcludeAlert
                 isOpen={isOpenExcludeAlert}
                 onClose={onCloseExcludeAlert}
-                symptom={symptomToBeDeleted.id}
+                symptomId={symptomToBeDeleted.id}
                 refetchList={refetch}
               />
             )}
@@ -154,6 +154,7 @@ export default function Symptoms() {
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Sintoma</Th>
+                        <Th>Descrição</Th>
                         {isAdmin && <Th></Th>}
                       </Tr>
                     </Thead>
@@ -161,8 +162,11 @@ export default function Symptoms() {
                     <Tbody>
                       {data?.symptoms.map(symptom => (
                         <Tr key={symptom.id} _hover={{ bgColor: 'gray.50' }}>
-                          <Td w="80%">
+                          <Td w="20%">
                             <Text>{symptom.name}</Text>
+                          </Td>
+                          <Td w="80%">
+                            <Text>{symptom.description}</Text>
                           </Td>
                           {isAdmin && (
                             <Td pr="4">
