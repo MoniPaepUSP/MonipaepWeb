@@ -3,35 +3,48 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
+import { Symptom } from "./useSymptoms";
+import { Patient } from "./usePatients";
 
-type SymptomOccurrencesResponse = {
+type ProbableDiseases = {
   id: string;
-  patient_id: string;
-  symptom_name: string;
-  registered_date: string;
+  name: string;
+  isPatientInRiskGroup: boolean;
+  suspicionScore: number;
 }
 
-type SymptomOccurrences = {
+export type SymptomOccurrencesResponse = {
+  symptomOccurrences: SymptomOccurrence[];
+  totalSymptomOccurrences: number;
+}
+
+export type SymptomOccurrence = {
   id: string;
-  patient_id: string;
-  symptom_name: string;
-  registered_date: string;
-  formatted_date: string;
+  chat: boolean;
+  symptoms: Symptom[];
+  patient: Patient;
+  registeredDate: string;
+  diseaseOccurrence?: string;
+  probableDiseases: ProbableDiseases;
 }
 
 interface UsePatientSymptomOccurrencesProps {
-  patientId: string;
+  patientId?: string;
 }
 
-export async function getPatientSymptomOccurrences(patientId: string) {
-  const { data } = await api.get<SymptomOccurrencesResponse[]>('/symptomoccurrence/', { 
+export async function getSymptomOccurrences(patientId?: string) {
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/', {
     params: {
-      patient_id: patientId,
+      patientId,
       unassigned: 't',
-    } 
+    }
   })
-  const formattedData: SymptomOccurrences[] = data.map(occurrence => {
-    const formattedDate = format(parseISO(occurrence.registered_date), 'Pp', { locale: ptBR })
+  if (!data || !data.symptomOccurrences || data.symptomOccurrences.length === 0) {
+    return []
+  }
+
+  const formattedData: SymptomOccurrence[] = data.symptomOccurrences.map(occurrence => {
+    const formattedDate = format(parseISO(occurrence.registeredDate), 'Pp', { locale: ptBR })
     return {
       ...occurrence,
       formatted_date: formattedDate.replace(",", " às")
@@ -43,7 +56,7 @@ export async function getPatientSymptomOccurrences(patientId: string) {
 
 export function usePatientSymptomOccurrences({ patientId }: UsePatientSymptomOccurrencesProps) {
   return useQuery(['patientSymptomOccurrences', patientId], () => {
-    return getPatientSymptomOccurrences(patientId)
+    return getSymptomOccurrences(patientId)
   }, {
     keepPreviousData: true,
     staleTime: 1000 * 5

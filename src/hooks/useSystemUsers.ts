@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
 import { api } from "../services/apiClient";
 
-type SystemUser = {
-  systemUser: {
+export type SystemUser = {
+  user: {
     id: string;
     name: string;
     email: string;
@@ -31,6 +31,7 @@ export async function getSystemUsers(page: number, filter?: string) {
   }
 
   const { data } = await api.get<GetSystemUsersResponse>('/permissions', { params })
+  console.log(data);
   return data
 }
 

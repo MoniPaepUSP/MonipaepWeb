@@ -1,11 +1,37 @@
 import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
+import { Symptom } from "./useSymptoms";
+import { HealthProtocol } from "./useHealthProtocols";
 
-type Disease = {
+export type Disease = {
+  id: string;
   name: string;
-  infected_Monitoring_Days: number;
-  suspect_Monitoring_Days: number;
+  infectedMonitoringDays: number;
+  suspectedMonitoringDays: number;
+  riskGroups: RiskGroups[];
+  symptoms: Symptom[];
+  alarmSigns: Symptom[];
+  shockSigns: Symptom[];
+  healthProtocols: HealthProtocol[];
+}
+
+type Comorbidity = {
+  id: string;
+  name: string;
+  description: string;
+}
+
+type SpecialCondition = {
+  id: string;
+  name: string;
+  description: string;
+}
+
+type RiskGroups = {
+  id: string;
+  comorbidities: Comorbidity[];
+  specialConditions: SpecialCondition[];
 }
 
 type GetDiseasesResponse = {
@@ -24,6 +50,7 @@ export async function getDiseases(page: number, filter?: string) {
     params = { ...params, name: filter }
   }
   const { data } = await api.get<GetDiseasesResponse>('/disease', { params })
+  console.log(data)
   return data
 }
 

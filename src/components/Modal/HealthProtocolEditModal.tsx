@@ -15,12 +15,7 @@ import {
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
-
-type HealthProtocol = {
-  id: string;
-  title: string;
-  description: string;
-}
+import { HealthProtocol } from '../../hooks/useHealthProtocols';
 
 interface HealthProtocolEditModalProps {
   isOpen: boolean;
@@ -30,48 +25,48 @@ interface HealthProtocolEditModalProps {
 }
 
 export function HealthProtocolEditModal({ isOpen, onClose, healthProtocol, refetchList }: HealthProtocolEditModalProps) {
-  const [title, setTitle] = useState(healthProtocol.title)
-  const [description, setDescription] = useState(healthProtocol.description)
+  const [instructions, setInstructions] = useState(healthProtocol.instructions)
+  const [severity, setSeverity] = useState(healthProtocol.severity)
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
 
   useEffect(() => {
-    setTitle(healthProtocol.title)
-    setDescription(healthProtocol.description)
+    setInstructions(healthProtocol.instructions);
+    setSeverity(healthProtocol.severity);
   }, [healthProtocol])
 
-  function handleTitleInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setTitle(event.target.value)
-    if(!touched) {
+  function handleInstructionsInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setInstructions(event.target.value)
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleDescriptionInputChanged(event: ChangeEvent<HTMLTextAreaElement>) {
-    setDescription(event.target.value)
-    if(!touched) {
+    setSeverity(event.target.value)
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleClose() {
-    setTitle(healthProtocol.title)
-    setDescription(healthProtocol.description)
+    setInstructions(healthProtocol.instructions)
+    setSeverity(healthProtocol.severity)
     setTouched(false)
     onClose()
   }
 
   async function handleHealthProtocolUpdate() {
-    if(title !== '' && description !== '') {
+    if (instructions !== '' && severity !== '') {
       let body: any = {}
-      if(title !== healthProtocol.title) {
-        body = { ...body, title }
+      if (instructions !== healthProtocol.instructions) {
+        body = { ...body.instructions }
       }
-      if(description !== healthProtocol.description) {
-        body = { ...body, description }
+      if (severity !== healthProtocol.severity) {
+        body = { ...body, severity }
       }
-      if(Object.keys(body).length === 0) {
+      if (Object.keys(body).length === 0) {
         toast({
           title: "Erro na alteração do protocolo",
           description: "Não houve nenhuma alteração nos campos",
@@ -110,14 +105,14 @@ export function HealthProtocolEditModal({ isOpen, onClose, healthProtocol, refet
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
@@ -126,16 +121,16 @@ export function HealthProtocolEditModal({ isOpen, onClose, healthProtocol, refet
           <ModalCloseButton />
           <ModalBody>
             <Text fontWeight="semibold" mb="2">Título</Text>
-            <Input value={title} mb="2" onChange={handleTitleInputChanged}/>
+            <Input value={instructions} mb="2" onChange={handleInstructionsInputChanged} />
             <Text fontWeight="semibold" mt="2">Descrição</Text>
-            <Textarea value={description} mb="2" height="100px" onChange={handleDescriptionInputChanged}/>
+            <Textarea value={severity} mb="2" height="100px" onChange={handleDescriptionInputChanged} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleHealthProtocolUpdate} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleHealthProtocolUpdate}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isUpdating}
             >
               Atualizar

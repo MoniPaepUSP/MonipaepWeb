@@ -1,3 +1,10 @@
+## Como rodar?
+
+```bash
+export NODE_OPTIONS=--openssl-legacy-provider
+npm run dev
+```
+
 ## Padrão Commitizen
 
 <ul>

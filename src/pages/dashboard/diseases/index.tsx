@@ -2,22 +2,22 @@ import { useState, useCallback, ChangeEvent, useMemo } from "react";
 import Head from "next/head"
 import { debounce } from "ts-debounce"
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
-import {  
-  Box, 
+import {
+  Box,
   Button,
-  Flex, 
-  Heading, 
+  Flex,
+  Heading,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
-  Table, 
-  Tbody, 
-  Td, 
-  Text, 
-  Th, 
-  Thead, 
-  Tr,  
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -27,17 +27,11 @@ import { RiAddLine } from 'react-icons/ri'
 
 import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { Pagination } from "../../../components/Pagination";
-import { useDiseases } from "../../../hooks/useDiseases";
+import { Disease, useDiseases } from "../../../hooks/useDiseases";
 import { useCan } from "../../../hooks/useCan";
 import { DiseaseEditModal } from "../../../components/Modal/DiseaseEditModal";
 import { DiseaseAddModal } from "../../../components/Modal/DiseaseAddModal";
 import { DiseaseExcludeAlert } from "../../../components/AlertDialog/DiseaseExcludeAlert";
-
-type Disease = {
-  name: string;
-  infected_Monitoring_Days: number;
-  suspect_Monitoring_Days: number;
-}
 
 export default function Diseases() {
   const [page, setPage] = useState(1)
@@ -46,22 +40,22 @@ export default function Diseases() {
   const [diseaseToBeDeleted, setDiseaseToBeDeleted] = useState<Disease | undefined>(undefined)
   const isAdmin = useCan({ roles: ["general.admin", "local.admin"] })
   const { data, isLoading, isFetching, error, refetch } = useDiseases({ page, filter: search })
-  const { 
-    isOpen: isOpenEditModal, 
-    onOpen: onOpenEditModal, 
-    onClose: onCloseEditModal 
+  const {
+    isOpen: isOpenEditModal,
+    onOpen: onOpenEditModal,
+    onClose: onCloseEditModal
   } = useDisclosure()
 
-  const { 
-    isOpen: isOpenExcludeAlert, 
-    onOpen: onOpenExcludeAlert, 
-    onClose: onCloseExcludeAlert 
+  const {
+    isOpen: isOpenExcludeAlert,
+    onOpen: onOpenExcludeAlert,
+    onClose: onCloseExcludeAlert
   } = useDisclosure()
 
-  const { 
-    isOpen: isOpenAddModal, 
-    onOpen: onOpenAddModal, 
-    onClose: onCloseAddModal 
+  const {
+    isOpen: isOpenAddModal,
+    onOpen: onOpenAddModal,
+    onClose: onCloseAddModal
   } = useDisclosure()
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
@@ -70,8 +64,8 @@ export default function Diseases() {
   }, [])
 
   const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)  
-  , [handleChangeInput]) 
+    () => debounce(handleChangeInput, 600)
+    , [handleChangeInput])
 
   function handleEditDisease(disease: Disease) {
     setDiseaseToBeEdited(disease)
@@ -82,7 +76,7 @@ export default function Diseases() {
     setDiseaseToBeDeleted(disease)
     onOpenExcludeAlert()
   }
-  
+
   return (
     <>
       <Head>
@@ -92,11 +86,11 @@ export default function Diseases() {
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
         <Heading ml="8" my="6">
           Doenças
-          { !isLoading && isFetching && <Spinner ml="4"/> }
+          {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg"/>
+            <Spinner size="lg" />
           </Box>
         ) : error ? (
           <Box w="100%" display="flex" justifyContent="center" alignItems="center">
@@ -105,24 +99,24 @@ export default function Diseases() {
         ) : (
           <>
             <DiseaseAddModal
-              isOpen={isOpenAddModal} 
-              onClose={onCloseAddModal} 
+              isOpen={isOpenAddModal}
+              onClose={onCloseAddModal}
               refetchList={refetch}
             />
 
-            { diseaseToBeEdited && (
-              <DiseaseEditModal 
-                isOpen={isOpenEditModal} 
-                onClose={onCloseEditModal} 
+            {diseaseToBeEdited && (
+              <DiseaseEditModal
+                isOpen={isOpenEditModal}
+                onClose={onCloseEditModal}
                 disease={diseaseToBeEdited}
                 refetchList={refetch}
               />
             )}
-            
-            { diseaseToBeDeleted && (
-              <DiseaseExcludeAlert 
-                isOpen={isOpenExcludeAlert} 
-                onClose={onCloseExcludeAlert} 
+
+            {diseaseToBeDeleted && (
+              <DiseaseExcludeAlert
+                isOpen={isOpenExcludeAlert}
+                onClose={onCloseExcludeAlert}
                 disease={diseaseToBeDeleted.name}
                 refetchList={refetch}
               />
@@ -131,16 +125,16 @@ export default function Diseases() {
             <Flex mx="8" mb="8" justifyContent="space-between" alignItems="center">
               <InputGroup w="30">
                 <InputLeftElement>
-                  <Icon as={MdSearch} fontSize="xl" color="gray.400"/>
+                  <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
-                <Input placeholder="Filtrar por doença..." onChange={debouncedChangeInputHandler}/>
-              </InputGroup>  
-              { isAdmin && (
-                <Button  
-                  size="sm" 
-                  fontSize="sm" 
+                <Input placeholder="Filtrar por doença..." onChange={debouncedChangeInputHandler} />
+              </InputGroup>
+              {isAdmin && (
+                <Button
+                  size="sm"
+                  fontSize="sm"
                   colorScheme="blue"
-                  leftIcon={<Icon as={RiAddLine} fontSize="20"/>}
+                  leftIcon={<Icon as={RiAddLine} fontSize="20" />}
                   onClick={onOpenAddModal}
                 >
                   Adicionar nova doença
@@ -149,10 +143,10 @@ export default function Diseases() {
             </Flex>
 
             <Flex direction="column" w="100%" overflow="auto" px="8">
-              { data?.totalDiseases === 0 ? (
+              {data?.totalDiseases === 0 ? (
                 <Text mt="2">
-                  { search === '' ? 
-                    'Não existem doenças registradas até o momento.' : 
+                  {search === '' ?
+                    'Não existem doenças registradas até o momento.' :
                     'A busca não encontrou nenhuma doença com esse nome.'
                   }
                 </Text>
@@ -165,48 +159,48 @@ export default function Diseases() {
                         <Th colSpan={2} isNumeric w="20%">
                           Período de monitoramento (dias)
                         </Th>
-                        { isAdmin && <Th w="20%"></Th> }
+                        {isAdmin && <Th w="20%"></Th>}
                       </Tr>
                       <Tr>
                         <Th isNumeric>Suspeito</Th>
                         <Th isNumeric>Infectado</Th>
-                        { isAdmin && <Th></Th> }
+                        {isAdmin && <Th></Th>}
                       </Tr>
                     </Thead>
 
                     <Tbody>
-                      { data?.diseases.map(disease => (
+                      {data?.diseases.map(disease => (
                         <Tr key={disease.name} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
                             <Text>{disease.name}</Text>
                           </Td>
                           <Td isNumeric>
-                            <Text>{disease.suspect_Monitoring_Days}</Text>
+                            <Text>{disease.suspectedMonitoringDays}</Text>
                           </Td>
                           <Td isNumeric>
-                            <Text>{disease.infected_Monitoring_Days}</Text>
+                            <Text>{disease.infectedMonitoringDays}</Text>
                           </Td>
-                          { isAdmin && (
+                          {isAdmin && (
                             <Td pr="4">
                               <Flex justifyContent="flex-end" alignItems="center">
-                                <Button 
-                                  fontSize="lg" 
-                                  height="36px" 
-                                  width="36px" 
-                                  colorScheme="blue" 
+                                <Button
+                                  fontSize="lg"
+                                  height="36px"
+                                  width="36px"
+                                  colorScheme="blue"
                                   onClick={() => handleEditDisease(disease)}
                                 >
-                                  <Icon as={BiPencil}/>
+                                  <Icon as={BiPencil} />
                                 </Button>
-                                <Button 
-                                  fontSize="lg" 
-                                  height="36px" 
+                                <Button
+                                  fontSize="lg"
+                                  height="36px"
                                   ml="2"
-                                  width="36px" 
-                                  colorScheme="red" 
+                                  width="36px"
+                                  colorScheme="red"
                                   onClick={() => handleDeleteDisease(disease)}
                                 >
-                                  <Icon as={BiTrash}/>
+                                  <Icon as={BiTrash} />
                                 </Button>
                               </Flex>
                             </Td>
@@ -217,9 +211,9 @@ export default function Diseases() {
                   </Table>
 
                   <Box w="100%" mt="3" mb="5">
-                    <Pagination 
-                      currentPage={page} 
-                      totalRegisters={data?.totalDiseases} 
+                    <Pagination
+                      currentPage={page}
+                      totalRegisters={data?.totalDiseases}
                       onPageChange={setPage}
                     />
                   </Box>
@@ -235,6 +229,6 @@ export default function Diseases() {
 
 Diseases.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return { props: {} }
 })

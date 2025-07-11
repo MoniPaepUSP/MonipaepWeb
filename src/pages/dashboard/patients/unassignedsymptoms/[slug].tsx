@@ -59,7 +59,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
 
   useEffect(() => {
     if(data && data.length > 0) {
-      setStartDate(new Date(data[data.length - 1].registered_date))
+      setStartDate(new Date(data[data.length - 1].registeredDate))
     }
   }, [isLoading, data])
 
@@ -182,15 +182,15 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                     <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md">
                       <Thead bgColor="gray.200">
                         <Tr>
-                          <Th>Sintoma</Th>
+                          <Th>Sintomas</Th>
                           <Th>Data da ocorrência</Th>
                         </Tr>
                       </Thead>
                       <Tbody>
                         { data?.map(symptomOccurrence => (
                           <Tr key={symptomOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
-                            <Td>{symptomOccurrence.symptom_name}</Td>
-                            <Td>{symptomOccurrence.formatted_date}</Td>
+                            <Td>{symptomOccurrence.symptoms.join(',')}</Td>
+                            <Td>{symptomOccurrence.registeredDate}</Td>
                           </Tr>
                         ))}
                       </Tbody>
@@ -213,7 +213,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                             locale="ptBR"
                             selected={startDate} 
                             onChange={handleChangeDate}
-                            minDate={data ? new Date(data[data.length - 1].registered_date) : startDate}
+                            minDate={data ? new Date(data[data.length - 1].registeredDate) : startDate}
                             showTimeSelect
                             timeFormat="p"
                             timeIntervals={15}
