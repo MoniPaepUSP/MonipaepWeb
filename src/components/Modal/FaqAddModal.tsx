@@ -18,11 +18,12 @@ import { api } from '../../services/apiClient';
 
 interface FaqAddModalProps {
   isOpen: boolean;
+  faqGroupId: string | undefined;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function FaqAddModal({ isOpen, onClose, refetchList }: FaqAddModalProps) {
+export function FaqAddModal({ isOpen, faqGroupId, onClose, refetchList }: FaqAddModalProps) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [touched, setTouched] = useState(false)
@@ -31,14 +32,14 @@ export function FaqAddModal({ isOpen, onClose, refetchList }: FaqAddModalProps) 
 
   function handleQuestionInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setQuestion(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleAnswerInputChanged(event: ChangeEvent<HTMLTextAreaElement>) {
     setAnswer(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
@@ -51,10 +52,10 @@ export function FaqAddModal({ isOpen, onClose, refetchList }: FaqAddModalProps) 
   }
 
   async function handleFaqCreation() {
-    if(question !== '' && answer !== '') {
+    if (question !== '' && answer !== '') {
       setIsPosting(true)
       try {
-        const response = await api.post('/faq/', { question, answer })
+        const response = await api.post('/faq/', { question, answer, faqGroupId })
         toast({
           title: "Sucesso na criação da questão",
           description: response.data?.success,
@@ -81,14 +82,14 @@ export function FaqAddModal({ isOpen, onClose, refetchList }: FaqAddModalProps) 
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
@@ -97,16 +98,16 @@ export function FaqAddModal({ isOpen, onClose, refetchList }: FaqAddModalProps) 
           <ModalCloseButton />
           <ModalBody>
             <Text fontWeight="semibold" mb="2">Pergunta</Text>
-            <Input value={question} mb="2" onChange={handleQuestionInputChanged}/>
+            <Input value={question} mb="2" onChange={handleQuestionInputChanged} />
             <Text fontWeight="semibold" mb="2">Resposta</Text>
-            <Textarea value={answer} onChange={handleAnswerInputChanged} height="300px" textAlign="justify"/>
+            <Textarea value={answer} onChange={handleAnswerInputChanged} height="300px" textAlign="justify" />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleFaqCreation} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleFaqCreation}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isPosting}
             >
               Registrar

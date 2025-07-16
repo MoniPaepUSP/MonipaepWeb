@@ -1,13 +1,12 @@
 import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
-import { Disease } from "./useDiseases";
 
 export type HealthProtocol = {
   id: string;
   severity: string;
   instructions: string;
-  disease: Disease;
+  diseaseId: string;
 }
 
 type GetHealthProtocolsResponse = {

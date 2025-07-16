@@ -24,68 +24,48 @@ interface DiseaseModalProps {
 
 export function DiseaseAddModal({ isOpen, onClose, refetchList }: DiseaseModalProps) {
   const [diseaseName, setDiseaseName] = useState('')
-  const [infectedDays, setInfectedDays] = useState(0)
-  const [suspectDays, setSuspectDays] = useState(0)
   const [touched, setTouched] = useState(false)
   const [isPosting, setIsPosting] = useState(false)
   const toast = useToast()
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
     setDiseaseName(event.target.value)
-    if(!touched) {
-      setTouched(true)
-    }
-  }
-
-  function handleInfectedInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setInfectedDays(Number(event.target.value))
-    if(!touched) {
-      setTouched(true)
-    }
-  }
-
-  function handleSuspectInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setSuspectDays(Number(event.target.value))
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleClose() {
     setDiseaseName('')
-    setInfectedDays(0)
-    setSuspectDays(0)
     setTouched(false)
     onClose()
   }
 
   async function handleDiseaseCreation() {
-    if(diseaseName !== '' && infectedDays > 0 && suspectDays > 0) {
+    if (diseaseName !== '') {
       setIsPosting(true)
       try {
-        const response = await api.post('/disease/', {
+        const response = await api.post('/disease/gpt', {
           name: diseaseName,
-          infected_Monitoring_Days: infectedDays,
-          suspect_Monitoring_Days: suspectDays,
         })
         toast({
-          title: "Sucesso na criação da doença",
+          title: "Sucesso na geração da doença",
           description: response.data?.success,
           status: "success",
           isClosable: true
         })
-      handleClose()
-      refetchList()
-    } catch (error: any) {
-      toast({
-        title: "Erro na criação da doença",
-        description: "Doença já registrada no sistema",
-        status: "error",
-        isClosable: true
-      })
-    }
-    setIsPosting(false)
-    
+        handleClose()
+        refetchList()
+      } catch (error: any) {
+        toast({
+          title: "Erro na criação da doença",
+          description: "Doença já registrada no sistema",
+          status: "error",
+          isClosable: true
+        })
+      }
+      setIsPosting(false)
+
     } else {
       toast({
         title: "Erro na criação da doença",
@@ -95,14 +75,14 @@ export function DiseaseAddModal({ isOpen, onClose, refetchList }: DiseaseModalPr
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
@@ -110,25 +90,18 @@ export function DiseaseAddModal({ isOpen, onClose, refetchList }: DiseaseModalPr
           <ModalHeader textAlign="center">Adicionar doença</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text fontWeight="semibold" mb="3">Nome da doença</Text>
-            <Input value={diseaseName} mb="4" onChange={handleNameInputChanged}/>
-            <Text fontWeight="semibold" mb="3">Período de monitoramento (em dias)</Text>
-            <Flex direction="column" justifyContent="space-between" alignItems="flex-start" ml="2">
-              <Text fontWeight="semibold" mb="2">Paciente suspeito</Text>
-              <Input alignSelf="center" type="number" value={suspectDays} mb="2" onChange={handleSuspectInputChanged}/>
-              <Text fontWeight="semibold" mb="2">Paciente infectado</Text>
-              <Input type="number" value={infectedDays} mb="2" onChange={handleInfectedInputChanged}/>
-            </Flex>
+            <Text fontWeight="semibold" mb="3">Nome da doença a ser gerada</Text>
+            <Input value={diseaseName} mb="4" onChange={handleNameInputChanged} />
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleDiseaseCreation} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleDiseaseCreation}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isPosting}
             >
-              Registrar
+              Gerar com IA
             </Button>
           </ModalFooter>
         </ModalContent>

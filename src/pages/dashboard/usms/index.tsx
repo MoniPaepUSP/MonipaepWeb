@@ -118,7 +118,7 @@ export default function Usms() {
               <UsmExcludeAlert
                 isOpen={isOpenExcludeAlert}
                 onClose={onCloseExcludeAlert}
-                usm={usmToBeDeleted.name}
+                usmId={usmToBeDeleted.id}
                 refetchList={refetch}
               />
             )}
@@ -158,22 +158,25 @@ export default function Usms() {
                       <Tr>
                         <Th>Nome da unidade</Th>
                         <Th>Endereço</Th>
-                        <Th>Bairro</Th>
                         {isAdmin && <Th></Th>}
                       </Tr>
                     </Thead>
 
                     <Tbody>
                       {data?.usms.map(usm => (
-                        <Tr key={usm.name} _hover={{ bgColor: 'gray.50' }}>
+                        <Tr key={usm.id} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
                             <Text>{usm.name}</Text>
                           </Td>
                           <Td>
-                            <Text>{usm.formattedAddress}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{usm.neighborhood}</Text>
+                            <Text>
+                              {[usm.street, usm.number ? usm.number : 's/n']
+                                .filter(Boolean)
+                                .join(', ')}
+                              {` - ${usm.neighborhood}`}
+                              {`, ${usm.city}`}
+                              {` - ${usm.state}`}
+                            </Text>
                           </Td>
                           {isAdmin && (
                             <Td pr="4">

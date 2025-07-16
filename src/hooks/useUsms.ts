@@ -10,10 +10,9 @@ export type Usm = {
   neighborhood: string;
   street?: string;
   number?: string;
-  formattedAddress: string;
   weekdayDescriptions: string[];
-	latitude: number;
-	longitude: number;
+  latitude: number;
+  longitude: number;
 }
 
 export type GetUsmsResponse = {
@@ -28,16 +27,16 @@ interface UseUsmsProps {
 
 export async function getUsms(page: number, filter?: string) {
   let params: any = { page }
-  if(filter) {
+  if (filter) {
     params = { ...params, name: filter }
   }
   const { data } = await api.get<GetUsmsResponse>('/usm', { params })
   return data
 }
 
-export function useUsms({ page, filter = '' }: UseUsmsProps) { 
+export function useUsms({ page, filter = '' }: UseUsmsProps) {
   return useQuery(['usms', page, filter], () => {
-    if(filter !== '') {
+    if (filter !== '') {
       return getUsms(page, filter)
     }
     return getUsms(page)

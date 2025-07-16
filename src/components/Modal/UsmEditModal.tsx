@@ -35,9 +35,13 @@ interface UsmEditModalProps {
 }
 
 export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModalProps) {
-  const [usmName, setUsmName] = useState(usm.name)
-  const [usmAddress, setUsmAddress] = useState(usm.formattedAddress)
-  const [usmNeighborhood, setUsmNeighborhood] = useState(usm.neighborhood)
+  const [name, setName] = useState(usm.name)
+  const [street, setStreet] = useState(usm.street)
+  const [number, setNumber] = useState(usm.number)
+  const [neighborhood, setNeighborhood] = useState(usm.neighborhood)
+  const [city, setCity] = useState(usm.city)
+  const [state, setState] = useState(usm.state)
+
   const [coords, setCoords] = useState<Location>({ lat: usm.latitude, lng: usm.longitude })
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
@@ -45,32 +49,53 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
   const toast = useToast()
 
   useEffect(() => {
-    setUsmName(usm.name)
-    setUsmAddress(usm.formattedAddress)
-    setUsmNeighborhood(usm.neighborhood)
+    setName(usm.name)
+    setStreet(usm.street || '')
+    setNumber(usm.number || '')
+    setNeighborhood(usm.neighborhood)
+    setCity(usm.city)
+    setState(usm.state)
+    setTouched(false)
     setCoords({ lat: usm.latitude, lng: usm.longitude })
   }, [usm])
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setUsmName(event.target.value)
+    setName(event.target.value)
     if (!touched) {
       setTouched(true)
     }
   }
-
-  function handleAddressInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setUsmAddress(event.target.value)
+  function handleStreetInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setStreet(event.target.value)
     if (!touched) {
       setTouched(true)
     }
   }
-
+  function handleNumberInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setNumber(event.target.value)
+    if (!touched) {
+      setTouched(true)
+    }
+  }
   function handleNeighborhoodInputChanged(event: ChangeEvent<HTMLInputElement>) {
-    setUsmNeighborhood(event.target.value)
+    setNeighborhood(event.target.value)
     if (!touched) {
       setTouched(true)
     }
   }
+  function handleCityInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setCity(event.target.value)
+    if (!touched) {
+      setTouched(true)
+    }
+  }
+  function handleStateInputChanged(event: ChangeEvent<HTMLInputElement>) {
+    setState(event.target.value)
+    if (!touched) {
+      setTouched(true)
+    }
+  }
+
 
   function updatePosition(location: Location) {
     setCoords(location)
@@ -78,16 +103,20 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
   }
 
   function handleClose() {
-    setUsmName(usm.name)
-    setUsmAddress(usm.formattedAddress)
-    setUsmNeighborhood(usm.neighborhood)
+    setName(usm.name)
+    setStreet(usm.street || '')
+    setNumber(usm.number || '')
+    setNeighborhood(usm.neighborhood)
+    setCity(usm.city)
+    setState(usm.state)
     setCoords({ lat: usm.latitude, lng: usm.longitude })
     setTouched(false)
     onClose()
   }
 
   async function handleCoordinatesFetch() {
-    if (usmAddress !== '') {
+    const usmAddress = [street, number ? number : 's/n', neighborhood, city, state].filter(Boolean).join(', ')
+    if (usmAddress.trim() !== '' && usmAddress.trim() !== 's/n,') {
       setIsFetching(true)
       const { data } = await googleApi.get('/maps/api/geocode/json', {
         params: {
@@ -121,9 +150,15 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
   }
 
   async function handleUsmUpdate() {
-    if (usmName !== '' && usmAddress !== '' && usmNeighborhood !== '' && coords) {
-      if (usmName === usm.name && usmAddress === usm.formattedAddress && usmNeighborhood === usm.neighborhood
-        && coords.lat === usm.latitude && coords.lng === usm.longitude) {
+    if (name !== '' && neighborhood !== '' && city !== '' && state !== '' && coords) {
+      if (name === usm.name &&
+        street === usm.street &&
+        number === usm.number &&
+        neighborhood === usm.neighborhood &&
+        city === usm.city &&
+        state === usm.state &&
+        coords.lat === usm.latitude &&
+        coords.lng === usm.longitude) {
         toast({
           title: "Erro na alteração da unidade",
           description: "Campos sem nenhuma alteração",
@@ -133,10 +168,13 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
       } else {
         setIsUpdating(true)
         try {
-          const response = await api.put(`/usm/${usm.name}`, {
-            name: usmName,
-            address: usmAddress,
-            neighborhood: usmNeighborhood,
+          const response = await api.put(`/usm/${usm.id}`, {
+            name,
+            street,
+            number,
+            neighborhood,
+            city,
+            state,
             latitude: coords.lat,
             longitude: coords.lng
           })
@@ -177,35 +215,51 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
       isCentered
       closeOnOverlayClick={false}
     >
-      <ModalOverlay>
-        <ModalContent height="auto" width="600px">
-          <ModalHeader textAlign="center">Editar unidade de saúde</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody w="100%" height="100%">
-            <Text fontWeight="semibold" mb="3">Nome da unidade</Text>
-            <Input value={usmName} mb="4" onChange={handleNameInputChanged} />
-            <Text fontWeight="semibold" mb="3">Endereço</Text>
-            <Input value={usmAddress} mb="4" onChange={handleAddressInputChanged} />
-            <Text fontWeight="semibold" mb="3">Bairro</Text>
-            <Input value={usmNeighborhood} mb="4" onChange={handleNeighborhoodInputChanged} />
-            <Button onClick={handleCoordinatesFetch} mb="4" w="100%" colorScheme="pink" isLoading={isFetching}>
-              Buscar coordenadas
-            </Button>
-            {coords && <Map center={coords} updatePosition={updatePosition} />}
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button
-              onClick={handleUsmUpdate}
-              colorScheme="blue"
-              disabled={!touched}
-              isLoading={isUpdating}
-            >
-              Atualizar
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </ModalOverlay>
+      <ModalOverlay />
+      <ModalContent
+        maxHeight="90vh"
+        width="60vw"
+        overflowY="auto"
+      >
+        <ModalHeader textAlign="center">Editar unidade de saúde</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody px={6} py={4}>
+          <Text fontWeight="semibold" mb="2">Nome da unidade</Text>
+          <Input value={name} mb="3" onChange={handleNameInputChanged} />
+
+          <Text fontWeight="semibold" mb="2">Rua</Text>
+          <Input value={street} mb="3" onChange={handleStreetInputChanged} />
+
+          <Text fontWeight="semibold" mb="2">Número</Text>
+          <Input value={number} mb="3" onChange={handleNumberInputChanged} />
+
+          <Text fontWeight="semibold" mb="2">Bairro</Text>
+          <Input value={neighborhood} mb="3" onChange={handleNeighborhoodInputChanged} />
+
+          <Text fontWeight="semibold" mb="2">Cidade</Text>
+          <Input value={city} mb="3" onChange={handleCityInputChanged} />
+
+          <Text fontWeight="semibold" mb="2">Estado</Text>
+          <Input value={state} mb="3" onChange={handleStateInputChanged} />
+
+          <Button onClick={handleCoordinatesFetch} mb="3" w="100%" colorScheme="pink" isLoading={isFetching}>
+            Buscar coordenadas
+          </Button>
+
+          {coords && <Map center={coords} updatePosition={updatePosition} />}
+        </ModalBody>
+        <ModalFooter>
+          <Button onClick={handleClose} mr="3">Cancelar</Button>
+          <Button
+            onClick={handleUsmUpdate}
+            colorScheme="blue"
+            disabled={!touched}
+            isLoading={isUpdating}
+          >
+            Atualizar
+          </Button>
+        </ModalFooter>
+      </ModalContent>
     </Modal>
   )
 }

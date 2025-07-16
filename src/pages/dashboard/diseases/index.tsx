@@ -117,7 +117,7 @@ export default function Diseases() {
               <DiseaseExcludeAlert
                 isOpen={isOpenExcludeAlert}
                 onClose={onCloseExcludeAlert}
-                disease={diseaseToBeDeleted.name}
+                disease={diseaseToBeDeleted.id}
                 refetchList={refetch}
               />
             )}
