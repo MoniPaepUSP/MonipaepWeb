@@ -9,7 +9,8 @@ export type Disease = {
   name: string;
   infectedMonitoringDays: number;
   suspectedMonitoringDays: number;
-  riskGroups: RiskGroups[];
+  comorbidities: Comorbidity[];
+  specialConditions: SpecialCondition[];
   symptoms: Symptom[];
   alarmSigns: Symptom[];
   shockSigns: Symptom[];
@@ -28,12 +29,6 @@ type SpecialCondition = {
   description: string;
 }
 
-type RiskGroups = {
-  id: string;
-  comorbidities: Comorbidity[];
-  specialConditions: SpecialCondition[];
-}
-
 type GetDiseasesResponse = {
   diseases: Disease[],
   totalDiseases: number,
@@ -46,16 +41,17 @@ interface UseDiseasesProps {
 
 export async function getDiseases(page: number, filter?: string) {
   let params: any = { page }
-  if(filter) {
+  if (filter) {
     params = { ...params, name: filter }
   }
   const { data } = await api.get<GetDiseasesResponse>('/disease', { params })
+  console.log(data);
   return data
 }
 
-export function useDiseases({ page, filter = '' }: UseDiseasesProps) { 
+export function useDiseases({ page, filter = '' }: UseDiseasesProps) {
   return useQuery(['diseases', page, filter], () => {
-    if(filter !== '') {
+    if (filter !== '') {
       return getDiseases(page, filter)
     }
     return getDiseases(page)

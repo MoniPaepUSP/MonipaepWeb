@@ -40,6 +40,7 @@ import { GroupAddModal } from "../../../components/Modal/GroupAddModal";
 export default function Faqs() {
   const [search, setSearch] = useState('')
   const [questionToBeEdited, setQuestionToBeEdited] = useState<Faq | undefined>(undefined)
+  const [questionGroupIdTobeAdded, setQuestionGroupIdTobeAdded] = useState<string | undefined>(undefined)
   const [questionToBeDeleted, setQuestionToBeDeleted] = useState<Faq | undefined>(undefined)
   const { data, isLoading, isFetching, error, refetch } = useFaqs({ filter: search })
   const {
@@ -84,6 +85,11 @@ export default function Faqs() {
     onOpenExcludeAlert()
   }
 
+  function handleAddQuestion(faqGroupId: string) {
+    setQuestionGroupIdTobeAdded(faqGroupId)
+    onOpenAddModal()
+  }
+
   return (
     <>
       <Head>
@@ -108,6 +114,7 @@ export default function Faqs() {
             <FaqAddModal
               isOpen={isOpenAddModal}
               onClose={onCloseAddModal}
+              faqGroupId={questionGroupIdTobeAdded}
               refetchList={refetch}
             />
 
@@ -232,7 +239,7 @@ export default function Faqs() {
                             fontSize="sm"
                             colorScheme="blue"
                             leftIcon={<Icon as={RiAddLine} fontSize="20" />}
-                            onClick={onOpenAddModal}
+                            onClick={() => handleAddQuestion(group.id)}
                           >
                             Adicionar nova Pergunta
                           </Button>

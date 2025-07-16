@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { 
+import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -14,12 +14,12 @@ import { api } from "../../services/apiClient";
 
 interface UsmExcludeAlertProps {
   isOpen: boolean;
-  usm: string;
+  usmId: string;
   onClose: () => void;
   refetchList: () => void;
 }
 
-export function UsmExcludeAlert({ isOpen, onClose, usm, refetchList }: UsmExcludeAlertProps) {
+export function UsmExcludeAlert({ isOpen, onClose, usmId, refetchList }: UsmExcludeAlertProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const cancelRef = useRef(null)
   const toast = useToast()
@@ -27,7 +27,7 @@ export function UsmExcludeAlert({ isOpen, onClose, usm, refetchList }: UsmExclud
   async function handleUsmExclusion() {
     setIsDeleting(true)
     try {
-      const response = await api.delete(`/usm/${usm}`)
+      const response = await api.delete(`/usm/${usmId}`)
       toast({
         title: "Sucesso na remoção da unidade",
         description: response.data?.success,
@@ -46,7 +46,7 @@ export function UsmExcludeAlert({ isOpen, onClose, usm, refetchList }: UsmExclud
     }
     setIsDeleting(false)
   }
-  
+
   return (
     <AlertDialog
       isOpen={isOpen}
