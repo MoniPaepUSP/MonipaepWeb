@@ -12,16 +12,16 @@ interface UseSymptomOccurrencesProps {
 
 export async function getSymptomOccurrences(page: number, filter?: string) {
   let params: any = { page }
-  if(filter) {
+  if (filter) {
     params = { ...params, patient_name: filter }
   }
-  
-  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/unassigned', { params })
+
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence', { params })
   const formattedData = data.symptomOccurrences.map(occurrence => {
     const formattedDate = format(parseISO(occurrence.registeredDate), 'Pp', { locale: ptBR })
     return {
       ...occurrence,
-      registered_date: formattedDate.replace(",", " às")
+      formattedDate: formattedDate.replace(",", " às")
     }
   })
 
@@ -33,9 +33,9 @@ export async function getSymptomOccurrences(page: number, filter?: string) {
   return formattedResponse
 }
 
-export function useSymptomOccurrences({ page, filter = '' }: UseSymptomOccurrencesProps) { 
+export function useSymptomOccurrences({ page, filter = '' }: UseSymptomOccurrencesProps) {
   return useQuery(['symptomOccurrences', page, filter], () => {
-    if(filter !== '') {
+    if (filter !== '') {
       return getSymptomOccurrences(page, filter)
     }
     return getSymptomOccurrences(page)

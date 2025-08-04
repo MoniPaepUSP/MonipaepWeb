@@ -2,7 +2,6 @@ import { useQuery } from "react-query";
 
 import { api } from "../services/apiClient";
 import { Symptom } from "./useSymptoms";
-import { HealthProtocol } from "./useHealthProtocols";
 
 export type Disease = {
   id: string;
@@ -12,8 +11,6 @@ export type Disease = {
   comorbidities: Comorbidity[];
   specialConditions: SpecialCondition[];
   symptoms: Symptom[];
-  alarmSigns: Symptom[];
-  shockSigns: Symptom[];
   healthProtocols: HealthProtocol[];
 }
 
@@ -32,6 +29,16 @@ type SpecialCondition = {
 type GetDiseasesResponse = {
   diseases: Disease[],
   totalDiseases: number,
+}
+
+type HealthProtocol = {
+  id: string;
+  diseaseId: string;
+  gravityLevel: number;
+  gravityLabel: string;
+  instructions: string;
+  referUSM?: "UPA" | "UBS";
+  symptoms: Symptom[];
 }
 
 interface UseDiseasesProps {
