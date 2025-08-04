@@ -51,8 +51,6 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
   const [suspectedMonitoringDays, setSuspectedMonitoringDays] = useState(disease.suspectedMonitoringDays);
 
   const [selectedSymptomIds, setSelectedSymptomIds] = useState<string[]>(disease.symptoms.map((s: any) => s.id));
-  const [selectedAlarmSymptomIds, setSelectedAlarmSymptomIds] = useState<string[]>(disease.alarmSigns.map((s: any) => s.id));
-  const [selectedShockSymptomIds, setSelectedShockSymptomIds] = useState<string[]>(disease.shockSigns.map((s: any) => s.id));
   const [selectedComorbidityIds, setSelectedComorbidityIds] = useState<string[]>(disease.comorbidities.map((c: any) => c.id));
   const [selectedConditionIds, setSelectedConditionIds] = useState<string[]>(disease.specialConditions.map((c: any) => c.id));
 
@@ -61,12 +59,8 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
   const [pageComorbidities, setPageComorbidities] = useState(1);
   const [pageConditions, setPageConditions] = useState(1);
   const [pageSymptoms, setPageSymptoms] = useState(1);
-  const [pageAlarm, setPageAlarm] = useState(1);
-  const [pageShock, setPageShock] = useState(1);
 
   const { data: symptomsData, isLoading: loadingSymptoms } = useSymptoms({ page: pageSymptoms });
-  const { data: alarmData } = useSymptoms({ page: pageAlarm });
-  const { data: shockData } = useSymptoms({ page: pageShock });
   const { data: comorbiditiesData, isLoading: loadingComorbidities } = useComorbidities({ page: pageComorbidities });
   const { data: conditionsData, isLoading: loadingConditions } = useSpecialConditions({ page: pageConditions });
 
@@ -75,8 +69,6 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
     setInfectedMonitoringDays(disease.infectedMonitoringDays);
     setSuspectedMonitoringDays(disease.suspectedMonitoringDays);
     setSelectedSymptomIds(disease.symptoms.map((s: any) => s.id));
-    setSelectedAlarmSymptomIds(disease.alarmSigns.map((s: any) => s.id));
-    setSelectedShockSymptomIds(disease.shockSigns.map((s: any) => s.id));
     setSelectedComorbidityIds(disease.comorbidities.map((c: any) => c.id));
     setSelectedConditionIds(disease.specialConditions.map((c: any) => c.id));
     setProtocols(disease.healthProtocols);
@@ -136,11 +128,9 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
       name,
       infectedMonitoringDays,
       suspectedMonitoringDays,
-      comorbidities: comorbiditiesData?.comorbidities.filter((c: any) => selectedComorbidityIds.includes(c.id)).map((c: Comorbidity) => c.id) || [],
-      specialConditions: conditionsData?.specialConditions.filter((c: any) => selectedConditionIds.includes(c.id)).map((c: SpecialCondition) => c.id) || [],
-      symptoms: symptomsData?.symptoms.filter((s: any) => selectedSymptomIds.includes(s.id)).map((s: Symptom) => s.id) || [],
-      alarmSigns: alarmData?.symptoms.filter((s: any) => selectedAlarmSymptomIds.includes(s.id)).map((s: Symptom) => s.id) || [],
-      shockSigns: shockData?.symptoms.filter((s: any) => selectedShockSymptomIds.includes(s.id)).map((s: Symptom) => s.id) || [],
+      comorbidities: selectedComorbidityIds,
+      specialConditions: selectedConditionIds,
+      symptoms: selectedSymptomIds,
       healthProtocols: protocols,
     };
 
@@ -189,17 +179,43 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
 
           <Tabs variant="enclosed">
             <TabList>
+              <Tab>Sintomas</Tab>
               <Tab>Comorbidades</Tab>
               <Tab>Condições Especiais</Tab>
-              <Tab>Sintomas</Tab>
-              <Tab>Sinais de Alarme</Tab>
-              <Tab>Sinais de Choque</Tab>
               <Tab>Protocolos</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
+                {loadingSymptoms ? <Spinner /> : (
+                  <>
+                    <Box mb={4}>
+                      <Text fontWeight="bold">Selecione todos os sintomas relacionados à doença, dos mais leves aos mais graves.</Text>
+                      <Text fontSize="sm" color="gray.500">Os sintomas selecionados serão usados para geração dos protocolos.</Text>
+                    </Box>
+                    <CheckboxGroup value={selectedSymptomIds} onChange={handleCheckboxChange(setSelectedSymptomIds)}>
+                      <VStack align="start">
+                        {symptomsData?.symptoms.map((s: any) => (
+                          <Checkbox key={s.id} value={s.id}>{s.name}</Checkbox>
+                        ))}
+                      </VStack>
+                    </CheckboxGroup>
+                    <Box mt={4}>
+                      <Pagination
+                        currentPage={pageSymptoms}
+                        totalRegisters={symptomsData?.totalSymptoms}
+                        onPageChange={setPageSymptoms}
+                      />
+                    </Box>
+                  </>
+                )}
+              </TabPanel>
+              <TabPanel>
                 {loadingComorbidities ? <Spinner /> : (
                   <>
+                    <Box mb={4}>
+                      <Text fontWeight="bold">Selecione as comorbidades que devem ser consideradas como grupo de risco para esta doença.</Text>
+                      <Text fontSize="sm" color="gray.500">As comorbidades selecionadas aumentarão a gravidade das ocorrências de sintomas associados.</Text>
+                    </Box>
                     <CheckboxGroup value={selectedComorbidityIds} onChange={handleCheckboxChange(setSelectedComorbidityIds)}>
                       <VStack align="start">
                         {comorbiditiesData?.comorbidities.map((c: any) => (
@@ -220,6 +236,10 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
               <TabPanel>
                 {loadingConditions ? <Spinner /> : (
                   <>
+                    <Box mb={4}>
+                      <Text fontWeight="bold">Selecione as condições especiais que devem ser consideradas como grupo de risco para esta doença.</Text>
+                      <Text fontSize="sm" color="gray.500">As condições selecionadas aumentarão a gravidade das ocorrências de sintomas associados.</Text>
+                    </Box>
                     <CheckboxGroup value={selectedConditionIds} onChange={handleCheckboxChange(setSelectedConditionIds)}>
                       <VStack align="start">
                         {conditionsData?.specialConditions.map((c: any) => (
@@ -238,81 +258,112 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
                 )}
               </TabPanel>
               <TabPanel>
-                {loadingSymptoms ? <Spinner /> : (
-                  <>
-                    <CheckboxGroup value={selectedSymptomIds} onChange={handleCheckboxChange(setSelectedSymptomIds)}>
-                      <VStack align="start">
-                        {symptomsData?.symptoms.map((s: any) => (
-                          <Checkbox key={s.id} value={s.id}>{s.name}</Checkbox>
-                        ))}
-                      </VStack>
-                    </CheckboxGroup>
-                    <Box mt={4}>
-                      <Pagination
-                        currentPage={pageSymptoms}
-                        totalRegisters={symptomsData?.totalSymptoms}
-                        onPageChange={setPageSymptoms}
+                <Box mb={4}>
+                  <Text fontWeight="bold">Defina os protocolos que o sistema deve seguir para a doença.</Text>
+                  <Text fontSize="sm" color="gray.500">O nível da doença começa em 1 (mais leve), e deverá ser mais grave quanto maior o nível.</Text>
+                </Box>
+                <Button
+                  mb={4}
+                  onClick={() => {
+                    setTouched(true);
+                    setProtocols([
+                      ...protocols,
+                      {
+                        id: `new-${protocols.length}`,          // or use uuid/v4
+                        diseaseId: disease.id,
+                        gravityLevel: protocols.length,         // first = 0, second = 1, …
+                        gravityLabel: '',
+                        instructions: '',
+                        symptoms: [],                           // start empty
+                      },
+                    ]);
+                  }}
+                >
+                  + Adicionar Protocolo
+                </Button>
+
+                <Button
+                  mb={4}
+                  ml={2}
+                  colorScheme="red"
+                  disabled={protocols.length === 0}
+                  onClick={() => {
+                    setTouched(true);
+                    // retira o último protocolo e reindexa gravityLevel
+                    const newProtocols = protocols
+                      .slice(0, -1)
+                      .map((p, i) => ({ ...p, gravityLevel: i }));
+                    setProtocols(newProtocols);
+                  }}
+                >
+                  – Remover último protocolo
+                </Button>
+
+                <VStack spacing={6} align="stretch">
+                  {protocols.sort((a, b) => a.gravityLevel - b.gravityLevel).map((p, idx) => (
+                    <Box
+                      key={p.id}
+                      p={4}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      bg="gray.50"
+                    >
+                      <Text fontWeight="bold" mb={2}>
+                        Protocolo nível {p.gravityLevel + 1}
+                      </Text>
+
+                      {/* Label */}
+                      <Text mb="1">Rótulo do Protocolo</Text>
+                      <Input
+                        mb={3}
+                        value={p.gravityLabel}
+                        onChange={e => {
+                          updateProtocol(idx, 'gravityLabel', e.target.value);
+                        }}
                       />
-                    </Box>
-                  </>
-                )}
-              </TabPanel>
-              <TabPanel>
-                {loadingSymptoms ? <Spinner /> : (
-                  <>
-                    <CheckboxGroup value={selectedAlarmSymptomIds} onChange={handleCheckboxChange(setSelectedAlarmSymptomIds)}>
-                      <VStack align="start">
-                        {alarmData?.symptoms.map((s: any) => (
-                          <Checkbox key={s.id} value={s.id}>{s.name}</Checkbox>
-                        ))}
-                      </VStack>
-                    </CheckboxGroup>
-                    <Box mt={4}>
-                      <Pagination
-                        currentPage={pageAlarm}
-                        totalRegisters={alarmData?.totalSymptoms}
-                        onPageChange={setPageAlarm}
-                      />
-                    </Box>
-                  </>
-                )}
-              </TabPanel>
-              <TabPanel>
-                {loadingSymptoms ? <Spinner /> : (
-                  <>
-                    <CheckboxGroup value={selectedShockSymptomIds} onChange={handleCheckboxChange(setSelectedShockSymptomIds)}>
-                      <VStack align="start">
-                        {shockData?.symptoms.map((s: any) => (
-                          <Checkbox key={s.id} value={s.id}>{s.name}</Checkbox>
-                        ))}
-                      </VStack>
-                    </CheckboxGroup>
-                    <Box mt={4}>
-                      <Pagination
-                        currentPage={pageShock}
-                        totalRegisters={shockData?.totalSymptoms}
-                        onPageChange={setPageShock}
-                      />
-                    </Box>
-                  </>
-                )}
-              </TabPanel>
-              <TabPanel>
-                <VStack spacing={4} align="stretch">
-                  {protocols.map((p: any, index: number) => (
-                    <VStack key={p.id} align="stretch" borderWidth={1} borderRadius="md" p={3}>
-                      <Select value={p.severity} onChange={e => updateProtocol(index, 'severity', e.target.value)}>
-                        <option value="leve">Leve</option>
-                        <option value="moderado">Moderado</option>
-                        <option value="grave">Grave</option>
-                        <option value="muito grave">Muito Grave</option>
+
+                      {/* Refer USM */}
+                      <Text mb="1">Encaminhar para USM?</Text>
+                      <Select
+                        mb={3}
+                        value={p.referUSM || 'não'}
+                        onChange={e => {
+                          updateProtocol(idx, 'referUSM', e.target.value as any);
+                        }}
+                      >
+                        <option value="não">Não</option>
+                        <option value="UPA">UPA</option>
+                        <option value="UBS">UBS</option>
                       </Select>
+
+                      {/* Sintomas deste Protocolo */}
+                      <Text mb="1">Sintomas aplicáveis</Text>
+                      <CheckboxGroup
+                        value={p.symptoms.map(s => s.id)}
+                        onChange={(vals: string[]) => {
+                          setTouched(true);
+                          const selected = disease.symptoms.filter(s => vals.includes(s.id));
+                          const updated = [...protocols];
+                          updated[idx] = { ...updated[idx], symptoms: selected };
+                          setProtocols(updated);
+                        }}
+                      >
+                        <VStack align="start">
+                          {disease.symptoms.sort((a, b) => a.name.localeCompare(b.name)).map(s => (
+                            <Checkbox key={s.id} value={s.id}>
+                              {s.name}
+                            </Checkbox>
+                          ))}
+                        </VStack>
+                      </CheckboxGroup>
+
+                      {/* Instruções */}
+                      <Text mb="1" mt={3}>Instruções</Text>
                       <Textarea
-                        placeholder="Instruções"
                         value={p.instructions}
-                        onChange={e => updateProtocol(index, 'instructions', e.target.value)}
+                        onChange={e => updateProtocol(idx, 'instructions', e.target.value)}
                       />
-                    </VStack>
+                    </Box>
                   ))}
                 </VStack>
               </TabPanel>

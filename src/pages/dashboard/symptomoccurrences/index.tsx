@@ -85,7 +85,8 @@ export default function SymptomOccurrences() {
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Nome do paciente</Th>
-                        <Th>Início dos sintomas</Th>
+                        <Th>Sintomas</Th>
+                        <Th>Data de ocorrência</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -102,7 +103,10 @@ export default function SymptomOccurrences() {
                             </NextLink>
                           </Td>
                           <Td>
-                            {symptomOccurrence.registeredDate}
+                            {symptomOccurrence.symptoms.map((symptom) => symptom.name).join(', ')}
+                          </Td>
+                          <Td>
+                            {symptomOccurrence.formattedDate && symptomOccurrence.formattedDate}
                           </Td>
                         </Tr>
                       ))}

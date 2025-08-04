@@ -3,21 +3,21 @@ import Head from "next/head"
 import Router from "next/router"
 import DatePicker, { registerLocale } from "react-datepicker";
 import ptBR from "date-fns/locale/pt-BR";
-import { 
-  Box, 
+import {
+  Box,
   Button,
   Checkbox,
   Divider,
-  Flex, 
+  Flex,
   Icon,
-  Table, 
-  Tbody, 
-  Td, 
-  Text, 
+  Table,
+  Tbody,
+  Td,
+  Text,
   Textarea,
-  Th, 
-  Thead, 
-  Tr,  
+  Th,
+  Thead,
+  Tr,
   SimpleGrid,
   Select,
   Spinner,
@@ -31,90 +31,51 @@ import { PatientDataWrapper } from "../../../../components/Layouts/PatientDataWr
 import DashboardLayout from "../../../../components/Layouts/DashboardLayout";
 import { usePatientSymptomOccurrences } from "../../../../hooks/usePatientSymptomOccurrences";
 import { api } from "../../../../services/apiClient";
+import { useDiseases } from "../../../../hooks/useDiseases";
 
-type GetDiseasesResponse = {
-  diseases: {
-    name: string;
-  } []
-}
-
-type DiseaseList = {
-  diseaseName: string;
-  selected: boolean;
-}
 interface UnassignedSymptomsProps {
   patientId: string;
 }
 
 registerLocale('ptBR', ptBR)
 export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProps) {
+  const [page, setPage] = useState(1)
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
-  const [diseaseList, setDiseaseList] = useState<DiseaseList[] | undefined>(undefined)
   const [diseaseStatus, setDiseaseStatus] = useState('Suspeito')
+  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([])
   const [diagnosis, setDiagnosis] = useState('')
   const [isPosting, setIsPosting] = useState(false)
-  const [isLoadingDiseases, setIsLoadingDiseases] = useState(false)
-  const { data, isLoading, isFetching, error,  } = usePatientSymptomOccurrences({ patientId })
+  const { data: diseaseData, isLoading: isLoadingDiseases, isFetching: isFetchingDiseases, error: errorDisease, refetch } = useDiseases({ page })
+  const { data, isLoading, isFetching, error, } = usePatientSymptomOccurrences({ page, patientId })
   const toast = useToast()
 
   useEffect(() => {
-    if(data && data.length > 0) {
+    if (data && data.length > 0) {
       setStartDate(new Date(data[data.length - 1].registeredDate))
     }
   }, [isLoading, data])
 
-  useEffect(() => {
-    const getDiseaseOptions = async() => {
-      setIsLoadingDiseases(true)
-      const { data } = await api.get<GetDiseasesResponse>('/disease')
-      const diseaseList: DiseaseList[] = data.diseases.map(disease => {
-        return {
-          diseaseName: disease.name,
-          selected: false,
-        }
-      })
-      if(diseaseList.length > 0) {
-        setDiseaseList(diseaseList)
-      }
-      setIsLoadingDiseases(false)
-    }
-    getDiseaseOptions()
-  }, [])
-
   function handleChangeDate(date: Date) {
-    if(date) {
+    if (date) {
       setStartDate(date)
     }
   }
 
-  function handleCheckboxClick(diseaseName: string) {
-    const newDiseaseList = diseaseList?.map(disease => {
-      if(disease.diseaseName === diseaseName) {
-        return {
-          ...disease,
-          selected: !disease.selected
-        }
-      }
-      return disease
-    })
-    setDiseaseList(newDiseaseList)
+  function handleCheckboxClick(diseaseId: string) {
+    if (selectedDiseases.includes(diseaseId)) {
+      setSelectedDiseases(selectedDiseases.filter(id => id !== diseaseId))
+    } else {
+      setSelectedDiseases([...selectedDiseases, diseaseId])
+    }
   }
 
   async function handleDiseaseOccurrenceCreation() {
-    let markedDiseases: string[] = []
-    
-    diseaseList?.forEach(disease => {
-      if(disease.selected) {
-        markedDiseases.push(disease.diseaseName)
-      }
-    })
-    
-    if(startDate && diagnosis !== '' && markedDiseases.length > 0) {
+    if (startDate && diagnosis !== '' && selectedDiseases.length > 0) {
       setIsPosting(true)
       try {
         const { data } = await api.post('/diseaseoccurrence', {
           patient_id: patientId,
-          disease_name: markedDiseases,
+          disease_name: selectedDiseases,
           status: diseaseStatus,
           date_start: startDate,
           diagnosis,
@@ -143,16 +104,16 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
       })
     }
   }
-  
+
   return (
     <PatientDataWrapper id={patientId} isFetching={isFetching} isLoading={isLoading}>
       <Head>
         <title>MoniPaEp | Sintomas em aberto</title>
       </Head>
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column">
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg" mt="10"/>
+            <Spinner size="lg" mt="10" />
           </Box>
         ) : error ? (
           <Box w="100%" display="flex" justifyContent="center" alignItems="center">
@@ -160,17 +121,17 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
           </Box>
         ) : (
           <Flex w="100%" pl="5" pr="8" justifyContent="space-between">
-            { data?.length === 0 ? (
+            {data?.length === 0 ? (
               <Text mt="9" ml="3">
                 Não existem ocorrências de sintomas em aberto deste paciente.
               </Text>
             ) : (
               <>
                 <Flex maxW="47%" w="100%">
-                  <Icon 
-                    as={IoChevronBack} 
-                    fontSize="22px" 
-                    mt="9" 
+                  <Icon
+                    as={IoChevronBack}
+                    fontSize="22px"
+                    mt="9"
                     mr="6"
                     _hover={{ cursor: 'pointer' }}
                     onClick={() => Router.back()}
@@ -187,10 +148,10 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                         </Tr>
                       </Thead>
                       <Tbody>
-                        { data?.map(symptomOccurrence => (
+                        {data?.map(symptomOccurrence => (
                           <Tr key={symptomOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
-                            <Td>{symptomOccurrence.symptoms.join(',')}</Td>
-                            <Td>{symptomOccurrence.registeredDate}</Td>
+                            <Td>{symptomOccurrence.symptoms.map((symptom) => symptom.name).join(', ')}</Td>
+                            <Td>{symptomOccurrence.formattedDate && symptomOccurrence.formattedDate}</Td>
                           </Tr>
                         ))}
                       </Tbody>
@@ -198,9 +159,9 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                   </Box>
                 </Flex>
                 <Box mt="4" minH="calc(100vh - 156px)">
-                  <Divider orientation="vertical" mx="6" size="100%"/>
+                  <Divider orientation="vertical" mx="6" size="100%" />
                 </Box>
-                <Flex maxW="47%" w="100%"  direction="column">
+                <Flex maxW="47%" w="100%" direction="column">
                   <Text w="100%" mt="8" mb="5" fontWeight="600" fontSize="lg">
                     Associação dos sintomas à uma ocorrência de doença
                   </Text>
@@ -209,9 +170,9 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                       <Flex mr="5" w="50%" alignItems="center">
                         <Text mr="3" fontWeight="500">Data de início:</Text>
                         <Box w="120px">
-                          <DatePicker 
+                          <DatePicker
                             locale="ptBR"
-                            selected={startDate} 
+                            selected={startDate}
                             onChange={handleChangeDate}
                             minDate={data ? new Date(data[data.length - 1].registeredDate) : startDate}
                             showTimeSelect
@@ -231,29 +192,29 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                     </Flex>
                     <Flex w="100%">
                       <Text mr="6" fontWeight="500">Diagnóstico:</Text>
-                      <Textarea w="100%" onChange={e => setDiagnosis(e.target.value)}/>
+                      <Textarea w="100%" onChange={e => setDiagnosis(e.target.value)} />
                     </Flex>
                     <Flex w="100%" direction="column">
                       <Text mb="3" fontWeight="500">Doenças suspeitas:</Text>
-                      { isLoadingDiseases ? (
-                        <Spinner size="lg" mt="2" alignSelf="center"/>
+                      {isLoadingDiseases ? (
+                        <Spinner size="lg" mt="2" alignSelf="center" />
                       ) : (
-                        <SimpleGrid 
-                          w="100%" 
-                          alignItems="center" 
-                          spacing="4" 
-                          minChildWidth="80px" 
+                        <SimpleGrid
+                          w="100%"
+                          alignItems="center"
+                          spacing="4"
+                          minChildWidth="80px"
                           columnGap="30px"
                           rowGap="10px"
                         >
-                          { diseaseList && (
-                            diseaseList.map(disease => (
-                              <Checkbox 
-                                key={disease.diseaseName} 
-                                isChecked={disease.selected} 
-                                onChange={() => handleCheckboxClick(disease.diseaseName)}
+                          {diseaseData?.diseases && (
+                            diseaseData.diseases.map(disease => (
+                              <Checkbox
+                                key={disease.id}
+                                isChecked={selectedDiseases.includes(disease.id)}
+                                onChange={() => handleCheckboxClick(disease.id)}
                               >
-                                {disease.diseaseName}
+                                {disease.name}
                               </Checkbox>
                             ))
                           )}
@@ -261,12 +222,12 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                       )}
                     </Flex>
                   </VStack>
-                  <Button 
+                  <Button
                     w="100%"
                     mt="6"
                     colorScheme="blue"
                     isLoading={isPosting}
-                    disabled={diseaseList && diseaseList.length === 0}
+                    disabled={diseaseData?.diseases && selectedDiseases.length === 0}
                     onClick={handleDiseaseOccurrenceCreation}
                   >
                     Registrar ocorrência de doença
@@ -284,11 +245,11 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
 
 UnassignedSymptoms.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   const params = ctx.params
-  return { 
-    props: { 
-      patientId: params?.slug 
-    } 
+  return {
+    props: {
+      patientId: params?.slug
+    }
   }
 })

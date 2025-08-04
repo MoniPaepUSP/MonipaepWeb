@@ -24,19 +24,22 @@ export type SymptomOccurrence = {
   symptoms: Symptom[];
   patient: Patient;
   registeredDate: string;
+  formattedDate?: string;
   diseaseOccurrence?: string;
   probableDiseases: ProbableDiseases;
 }
 
 interface UsePatientSymptomOccurrencesProps {
+  page: number;
   patientId?: string;
 }
 
-export async function getSymptomOccurrences(patientId?: string) {
-  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/', {
+export async function getSymptomOccurrences(page: number, patientId?: string) {
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence', {
     params: {
-      patientId,
-      unassigned: 't',
+      page,
+      patient_id: patientId,
+      unassigned: true,
     }
   })
   if (!data || !data.symptomOccurrences || data.symptomOccurrences.length === 0) {
@@ -47,16 +50,16 @@ export async function getSymptomOccurrences(patientId?: string) {
     const formattedDate = format(parseISO(occurrence.registeredDate), 'Pp', { locale: ptBR })
     return {
       ...occurrence,
-      formatted_date: formattedDate.replace(",", " às")
+      formattedDate: formattedDate.replace(",", " às")
     }
   })
 
   return formattedData
 }
 
-export function usePatientSymptomOccurrences({ patientId }: UsePatientSymptomOccurrencesProps) {
+export function usePatientSymptomOccurrences({ page, patientId }: UsePatientSymptomOccurrencesProps) {
   return useQuery(['patientSymptomOccurrences', patientId], () => {
-    return getSymptomOccurrences(patientId)
+    return getSymptomOccurrences(page, patientId)
   }, {
     keepPreviousData: true,
     staleTime: 1000 * 5
