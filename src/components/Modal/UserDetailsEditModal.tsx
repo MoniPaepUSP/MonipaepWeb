@@ -141,8 +141,7 @@ export function UserDetailsEditModal({ isOpen, onClose, user, refetch }: UserDet
               <FormControl isInvalid={!!errors.name}>
                 <FormLabel>Nome</FormLabel>
                 <Input 
-                  type="text" 
-                  label="name" 
+                  type="text"
                   {...register("name")}
                 />
                 { !!errors.name && (

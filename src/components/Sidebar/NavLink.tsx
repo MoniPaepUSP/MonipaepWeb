@@ -26,7 +26,6 @@ export function NavLink({ href, icon, children, ...rest }: NavLinkProps) {
           role="group"
           display="flex" 
           bgColor={ isActive ? "custom.blue-light" : "custom.blue-dark"} 
-          align="center" 
           mx="auto"
           _hover= {{ bgColor: "custom.blue-light" }}
           transition= "background"

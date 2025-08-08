@@ -51,7 +51,6 @@ export function AccountSection() {
           role="group"
           display="flex"
           bgColor="custom.blue-dark"
-          align="center"
           mx="auto"
           _hover={{ bgColor: "custom.blue-light", cursor: "pointer" }}
           transition="background"

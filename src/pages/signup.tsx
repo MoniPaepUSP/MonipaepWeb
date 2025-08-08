@@ -60,7 +60,7 @@ export default function SignUp() {
   const [showConfirmationPassword, setShowConfirmationPassword] = useState(false)
   const toast = useToast()
 
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState } = useForm<SignUpData>({
     resolver: yupResolver(schema)
   })
   const { errors } = formState
@@ -108,8 +108,7 @@ export default function SignUp() {
                     <Icon as={MdPerson} color="custom.blue-600"/>
                   </InputLeftElement>
                   <Input 
-                    type="text" 
-                    label="name" 
+                    type="text"
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -164,7 +163,6 @@ export default function SignUp() {
                   </InputLeftElement>
                   <Input 
                     type="email" 
-                    label="E-mail" 
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -215,7 +213,6 @@ export default function SignUp() {
                   </InputLeftElement>
                   <Input 
                     type={showPassword ? "text": "password"}
-                    label="password" 
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -242,7 +239,7 @@ export default function SignUp() {
                 )}
               </FormControl>
 
-              <FormControl id="form-password-confirmation" isInvalid={!!errors.password_confirmation}>
+              <FormControl id="form-password-confirmation" isInvalid={!!errors.passwordConfirmation}>
                 <FormLabel htmlFor="password" id="label-for-password-confirmation" color="custom.gray-800">Confirmação da senha</FormLabel>
                 <InputGroup >
                   <InputLeftElement>
@@ -250,7 +247,6 @@ export default function SignUp() {
                   </InputLeftElement>
                   <Input 
                     type={showConfirmationPassword ? "text": "password"}
-                    label="password" 
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -259,7 +255,7 @@ export default function SignUp() {
                       'borderColor': 'custom.blue-400'
                     }}
                     focusBorderColor="custom.blue-500"
-                    {...register("password_confirmation")}
+                    {...register("passwordConfirmation")}
                   />
                   <InputRightElement>
                     <Icon 
@@ -270,9 +266,9 @@ export default function SignUp() {
                     />
                   </InputRightElement>
                 </InputGroup>
-                { !!errors?.password_confirmation && (
+                { !!errors?.passwordConfirmation && (
                   <FormErrorMessage>
-                    {errors.password_confirmation?.message}
+                    {errors.passwordConfirmation?.message}
                   </FormErrorMessage>
                 )}
               </FormControl>

@@ -47,7 +47,7 @@ const schema = yup.object().shape({
 
 export function UserPasswordEditModal({ isOpen, userId, onClose }: UserPasswordEditModalProps) {
   const [isUpdating, setIsUpdating] = useState(false)
-  const { register, handleSubmit, formState, reset } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm<UpdatePasswordData>({
     resolver: yupResolver(schema),
   })
   const { errors } = formState
