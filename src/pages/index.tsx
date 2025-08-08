@@ -5,22 +5,22 @@ import Head from 'next/head'
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { 
-  Box, 
-  Button, 
-  Link as ChakraLink, 
-  Flex, 
-  FormControl, 
-  FormErrorMessage, 
-  FormLabel, Heading, 
-  Icon, 
-  Input as ChakraInput, 
-  InputGroup, 
-  InputLeftElement, 
-  InputRightElement, 
-  Stack, 
-  Text, 
-  useToast 
+import {
+  Box,
+  Button,
+  Link as ChakraLink,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel, Heading,
+  Icon,
+  Input as ChakraInput,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Stack,
+  Text,
+  useToast
 } from '@chakra-ui/react'
 import { MdEmail, MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import { HiLockClosed } from 'react-icons/hi'
@@ -41,7 +41,7 @@ const schema = yup.object().shape({
 const Home = () => {
   const [showPassword, setShowPassword] = useState(false)
   const { signIn } = useContext(AuthContext)
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState } = useForm<LoginData>({
     resolver: yupResolver(schema)
   })
   const { errors } = formState
@@ -59,7 +59,7 @@ const Home = () => {
       })
     }
   }
-  
+
   return (
     <>
       <Head>
@@ -69,16 +69,15 @@ const Home = () => {
         <Flex direction="column" background="custom.blue-50" p="8" rounded="7" maxWidth="400" mx="auto">
           <Heading mb={6} color="custom.gray-800" textAlign="center">Faça seu login no MoniPaEp</Heading>
           <Flex as="form" direction="column" onSubmit={handleSubmit(handleSignIn)}>
-            <Stack spacing={4} mb={4}>     
+            <Stack spacing={4} mb={4}>
               <FormControl id="form-email" isInvalid={!!errors.email}>
                 <FormLabel htmlFor="email" id="label-for-email" color="custom.gray-800">E-mail</FormLabel>
                 <InputGroup>
                   <InputLeftElement>
-                    <Icon as={MdEmail} color="custom.blue-600"/>
+                    <Icon as={MdEmail} color="custom.blue-600" />
                   </InputLeftElement>
-                  <ChakraInput 
-                    type="email" 
-                    label="E-mail" 
+                  <ChakraInput
+                    type="email"
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -90,7 +89,7 @@ const Home = () => {
                     {...register("email")}
                   />
                 </InputGroup>
-                { !!errors?.email && (
+                {!!errors?.email && (
                   <FormErrorMessage>
                     {errors.email?.message}
                   </FormErrorMessage>
@@ -101,11 +100,10 @@ const Home = () => {
                 <FormLabel htmlFor="password" id="label-for-password" color="custom.gray-800">Senha</FormLabel>
                 <InputGroup >
                   <InputLeftElement>
-                    <Icon as={HiLockClosed} color="custom.blue-600"/>
+                    <Icon as={HiLockClosed} color="custom.blue-600" />
                   </InputLeftElement>
-                  <ChakraInput 
-                    type={showPassword ? "text": "password"}
-                    label="password" 
+                  <ChakraInput
+                    type={showPassword ? "text" : "password"}
                     color="custom.gray-800"
                     bgColor="custom.blue-100"
                     variant="filled"
@@ -117,28 +115,28 @@ const Home = () => {
                     {...register("password")}
                   />
                   <InputRightElement>
-                    <Icon 
-                      as={showPassword ? MdVisibility : MdVisibilityOff} 
-                      color="custom.blue-600" 
-                      _hover={{'cursor': 'pointer'}}
+                    <Icon
+                      as={showPassword ? MdVisibility : MdVisibilityOff}
+                      color="custom.blue-600"
+                      _hover={{ 'cursor': 'pointer' }}
                       onClick={() => setShowPassword(prevState => !prevState)}
                     />
                   </InputRightElement>
                 </InputGroup>
-                { !!errors?.password && (
+                {!!errors?.password && (
                   <FormErrorMessage>
                     {errors.password?.message}
                   </FormErrorMessage>
                 )}
               </FormControl>
             </Stack>
-        
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               mt="2"
-              bgColor="custom.blue-600" 
+              bgColor="custom.blue-600"
               color="white"
-              _hover={{'bgColor': 'custom.blue-500'}}
+              _hover={{ 'bgColor': 'custom.blue-500' }}
             >
               ENTRAR
             </Button>
