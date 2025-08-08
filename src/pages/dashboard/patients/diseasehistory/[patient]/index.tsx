@@ -121,16 +121,16 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
                               passHref
                             >
                               <Link color="blue.500" fontWeight="semibold">
-                                {diseaseOccurrence.disease_name}
+                                {diseaseOccurrence.disease.name}
                               </Link>
                             </NextLink>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.date_start}</Text>
+                            <Text>{diseaseOccurrence.dateStart}</Text>
                           </Td>
                           <Td>
-                            { diseaseOccurrence.date_end ? (
-                              <Text>{diseaseOccurrence.date_end}</Text>
+                            { diseaseOccurrence.dateEnd ? (
+                              <Text>{diseaseOccurrence.dateEnd}</Text>
                             ) : (
                               <Badge colorScheme="green">
                                 Em andamento

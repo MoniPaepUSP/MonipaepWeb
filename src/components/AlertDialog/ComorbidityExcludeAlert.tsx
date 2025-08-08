@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { 
+import {
   AlertDialog,
   AlertDialogBody,
   AlertDialogFooter,
@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 
 import { api } from "../../services/apiClient";
+import DialogContent from "./DialogContent";
 
 interface ComorbidityExcludeAlertProps {
   isOpen: boolean;
@@ -47,7 +48,7 @@ export function ComorbidityExcludeAlert({ isOpen, onClose, comorbidityId, refetc
     }
     setIsDeletting(false)
   }
-  
+
   return (
     <AlertDialog
       isOpen={isOpen}
@@ -57,22 +58,12 @@ export function ComorbidityExcludeAlert({ isOpen, onClose, comorbidityId, refetc
       isCentered
     >
       <AlertDialogOverlay>
-        <AlertDialogContent>
-          <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            Confirmação necessária
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            Tem certeza que deseja excluir esta comorbidade?
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose} variant="outline">
-              Cancelar
-            </Button>
-            <Button colorScheme="red" onClick={handleComorbidityExclusion} ml={3} isLoading={isDeletting}>
-              Excluir
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
+        <DialogContent
+          cancelRef={cancelRef}
+          onClose={onClose}
+          onConfirm={handleComorbidityExclusion}
+          isDeletting={isDeletting}
+        />
       </AlertDialogOverlay>
     </AlertDialog>
   )
