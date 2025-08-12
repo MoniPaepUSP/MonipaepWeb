@@ -6,11 +6,11 @@ import { api } from "../services/apiClient";
 
 type DiseaseOccurrences = {
   id: string;
-  patient_id: string;
-  disease_name: string;
+  patientId: string;
+  diseaseName: string;
   diagnosis: string;
-  date_start: string;
-  date_end: string | null;
+  dateStart: string;
+  dateEnd: string | null;
   status: string;
   patient: {
     name: string;
@@ -43,8 +43,8 @@ export async function getDiseaseOccurrences(page: number, filter?: FilterDisease
   const { data } = await api.get<GetDiseaseOccurrencesResponse>('/diseaseoccurrence', { params })
 
   const formattedData = data.diseaseOccurrences.map(diseaseOccurrence => {
-    const dateStartFormatted = format(parseISO(diseaseOccurrence.date_start), 'P', { locale: ptBR })
-    let dateEndFormatted = diseaseOccurrence.date_end
+    const dateStartFormatted = format(parseISO(diseaseOccurrence.dateStart), 'P', { locale: ptBR })
+    let dateEndFormatted = diseaseOccurrence.dateEnd
 
     if(dateEndFormatted) {
       dateEndFormatted = format(parseISO(dateEndFormatted), 'P', { locale: ptBR })

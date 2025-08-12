@@ -18,10 +18,6 @@ import { googleApi } from '../../services/googleApi';
 import { api } from '../../services/apiClient';
 import { Usm } from '../../hooks/useUsms';
 
-const Map = dynamic(() => import('../Map/AddUsmMap'), {
-  ssr: false
-})
-
 type Location = {
   lat: number;
   lng: number;
@@ -95,7 +91,6 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
       setTouched(true)
     }
   }
-
 
   function updatePosition(location: Location) {
     setCoords(location)
@@ -242,11 +237,6 @@ export function UsmEditModal({ isOpen, onClose, usm, refetchList }: UsmEditModal
           <Text fontWeight="semibold" mb="2">Estado</Text>
           <Input value={state} mb="3" onChange={handleStateInputChanged} />
 
-          <Button onClick={handleCoordinatesFetch} mb="3" w="100%" colorScheme="pink" isLoading={isFetching}>
-            Buscar coordenadas
-          </Button>
-
-          {coords && <Map center={coords} updatePosition={updatePosition} />}
         </ModalBody>
         <ModalFooter>
           <Button onClick={handleClose} mr="3">Cancelar</Button>

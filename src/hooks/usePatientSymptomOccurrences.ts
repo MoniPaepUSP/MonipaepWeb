@@ -22,10 +22,14 @@ export type SymptomOccurrence = {
   id: string;
   chat: boolean;
   symptoms: Symptom[];
+  remarks?: string;
+  instructions?: string;
+  isPatientInRiskGroup: boolean;
+  referUSM?: string;
   patient: Patient;
   registeredDate: string;
   formattedDate?: string;
-  diseaseOccurrence?: string;
+  diseaseOccurrenceId?: string;
   probableDiseases: ProbableDiseases;
 }
 
@@ -35,10 +39,10 @@ interface UsePatientSymptomOccurrencesProps {
 }
 
 export async function getSymptomOccurrences(page: number, patientId?: string) {
-  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence', {
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/list', {
     params: {
       page,
-      patient_id: patientId,
+      patientId,
       unassigned: true,
     }
   })
