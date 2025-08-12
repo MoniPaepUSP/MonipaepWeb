@@ -86,6 +86,7 @@ export default function SymptomOccurrences() {
                       <Tr>
                         <Th>Nome do paciente</Th>
                         <Th>Sintomas</Th>
+                        <Th>Observações</Th>
                         <Th>Data de ocorrência</Th>
                       </Tr>
                     </Thead>
@@ -104,6 +105,9 @@ export default function SymptomOccurrences() {
                           </Td>
                           <Td>
                             {symptomOccurrence.symptoms.map((symptom) => symptom.name).join(', ')}
+                          </Td>
+                          <Td>
+                            {symptomOccurrence.remarks ? symptomOccurrence.remarks : "Sem observações"}
                           </Td>
                           <Td>
                             {symptomOccurrence.formattedDate && symptomOccurrence.formattedDate}

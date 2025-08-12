@@ -50,7 +50,7 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
   const [infectedMonitoringDays, setInfectedMonitoringDays] = useState(disease.infectedMonitoringDays);
   const [suspectedMonitoringDays, setSuspectedMonitoringDays] = useState(disease.suspectedMonitoringDays);
 
-  const [selectedSymptomIds, setSelectedSymptomIds] = useState<string[]>(disease.symptoms.map((s: any) => s.id));
+  const [selectedSymptoms, setSelectedSymptoms] = useState<Symptom[]>(disease.symptoms);
   const [selectedComorbidityIds, setSelectedComorbidityIds] = useState<string[]>(disease.comorbidities.map((c: any) => c.id));
   const [selectedConditionIds, setSelectedConditionIds] = useState<string[]>(disease.specialConditions.map((c: any) => c.id));
 
@@ -68,18 +68,40 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
     setName(disease.name);
     setInfectedMonitoringDays(disease.infectedMonitoringDays);
     setSuspectedMonitoringDays(disease.suspectedMonitoringDays);
-    setSelectedSymptomIds(disease.symptoms.map((s: any) => s.id));
+    setSelectedSymptoms(disease.symptoms);
     setSelectedComorbidityIds(disease.comorbidities.map((c: any) => c.id));
     setSelectedConditionIds(disease.specialConditions.map((c: any) => c.id));
     setProtocols(disease.healthProtocols);
     setTouched(false);
   }, [disease]);
 
+  function handleSymptomCheckboxChange() {
+    return (values: string[]) => {
+      if (!touched) {
+        setTouched(true);
+      }
+
+      const addedId = values.find(id => !selectedSymptoms.map((s) => s.id).includes(id));
+      const removedSymptom = selectedSymptoms.find(s => !values.includes(s.id));
+
+      if (addedId) {
+        const symptom = symptomsData?.symptoms.find(s => s.id === addedId);
+        if (!symptom) return;
+        setSelectedSymptoms(prev => [...prev, symptom]);
+      } else if (removedSymptom) {
+        setSelectedSymptoms(prev => prev.filter(s => s != removedSymptom));
+      }
+    };
+  }
+
   function handleCheckboxChange(setter: any) {
     if (!touched) {
       setTouched(true);
     }
-    return (values: string[]) => setter(values);
+
+    return (values: string[]) => {
+      setter(values);
+    };
   }
 
   function handleNameInputChanged(event: ChangeEvent<HTMLInputElement>) {
@@ -130,7 +152,7 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
       suspectedMonitoringDays,
       comorbidities: selectedComorbidityIds,
       specialConditions: selectedConditionIds,
-      symptoms: selectedSymptomIds,
+      symptoms: selectedSymptoms.map((s) => s.id),
       healthProtocols: protocols,
     };
 
@@ -144,7 +166,7 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
         isClosable: true
       })
       setTouched(false)
-      onClose()
+      onClose();
       refetchList()
     } catch (error: any) {
       toast({
@@ -192,7 +214,7 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
                       <Text fontWeight="bold">Selecione todos os sintomas relacionados à doença, dos mais leves aos mais graves.</Text>
                       <Text fontSize="sm" color="gray.500">Os sintomas selecionados serão usados para geração dos protocolos.</Text>
                     </Box>
-                    <CheckboxGroup value={selectedSymptomIds} onChange={handleCheckboxChange(setSelectedSymptomIds)}>
+                    <CheckboxGroup value={selectedSymptoms.map(s => s.id)} onChange={handleSymptomCheckboxChange()}>
                       <VStack align="start">
                         {symptomsData?.symptoms.map((s: any) => (
                           <Checkbox key={s.id} value={s.id}>{s.name}</Checkbox>
@@ -342,14 +364,19 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
                         value={p.symptoms.map(s => s.id)}
                         onChange={(vals: string[]) => {
                           setTouched(true);
-                          const selected = disease.symptoms.filter(s => vals.includes(s.id));
+                          const selected = selectedSymptoms.filter(s => vals.includes(s.id));
                           const updated = [...protocols];
                           updated[idx] = { ...updated[idx], symptoms: selected };
                           setProtocols(updated);
                         }}
                       >
                         <VStack align="start">
-                          {disease.symptoms.sort((a, b) => a.name.localeCompare(b.name)).map(s => (
+                          {selectedSymptoms.filter((symptom) =>
+                            // filtra sintomas que não estejam em outros protocolos
+                            !protocols.some((protocol, pIdx) => (
+                              pIdx !== idx && protocol.symptoms.some(s => s.id === symptom.id)
+                            ))
+                          ).sort((a, b) => a.name.localeCompare(b.name)).map(s => (
                             <Checkbox key={s.id} value={s.id}>
                               {s.name}
                             </Checkbox>

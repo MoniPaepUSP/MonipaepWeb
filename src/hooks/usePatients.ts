@@ -42,14 +42,15 @@ interface UsePatientsProps {
 
 export async function getPatients(page: number, filter?: FilterPatient) {
   let params = { page }
-  if(filter) {
+  if (filter) {
     params = { ...params, [filter[0]]: filter[1] }
   }
   const { data } = await api.get<GetPatientsResponse>('/patients', { params })
+  console.log(data)
   const formattedData = data.patients.map(patient => {
     const createdAtFormatted = format(parseISO(patient.createdAt), 'P', { locale: ptBR })
     const birthdateFormatted = format(parseISO(patient.birthdate), 'P', { locale: ptBR })
-    const formattedCPF = 
+    const formattedCPF =
       patient.cpf.slice(0, 3) + "." + patient.cpf.slice(3, 6) + "."
       + patient.cpf.slice(6, 9) + "-" + patient.cpf.slice(9, 12)
     return {
@@ -67,9 +68,9 @@ export async function getPatients(page: number, filter?: FilterPatient) {
 }
 
 export function usePatients({ page, filter = ['name', ''] }: UsePatientsProps) {
-  const key = filter[1] === '' ? page : `${filter[0]}-${filter[1]}-${page}` 
+  const key = filter[1] === '' ? page : `${filter[0]}-${filter[1]}-${page}`
   return useQuery(['patients', key], () => {
-    if(!filter || filter[1] === '') {
+    if (!filter || filter[1] === '') {
       return getPatients(page)
     }
     return getPatients(page, filter)

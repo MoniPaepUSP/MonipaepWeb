@@ -16,7 +16,7 @@ export async function getSymptomOccurrences(page: number, filter?: string) {
     params = { ...params, patient_name: filter }
   }
 
-  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence', { params })
+  const { data } = await api.get<SymptomOccurrencesResponse>('/symptomoccurrence/list', { params })
   const formattedData = data.symptomOccurrences.map(occurrence => {
     const formattedDate = format(parseISO(occurrence.registeredDate), 'Pp', { locale: ptBR })
     return {

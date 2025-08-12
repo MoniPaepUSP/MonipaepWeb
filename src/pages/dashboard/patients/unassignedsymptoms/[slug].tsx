@@ -144,6 +144,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                       <Thead bgColor="gray.200">
                         <Tr>
                           <Th>Sintomas</Th>
+                          <Th>Observações</Th>
                           <Th>Data da ocorrência</Th>
                         </Tr>
                       </Thead>
@@ -151,6 +152,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                         {data?.map(symptomOccurrence => (
                           <Tr key={symptomOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
                             <Td>{symptomOccurrence.symptoms.map((symptom) => symptom.name).join(', ')}</Td>
+                            <Td>{symptomOccurrence.remarks ? symptomOccurrence.remarks : "Sem observações"}</Td>
                             <Td>{symptomOccurrence.formattedDate && symptomOccurrence.formattedDate}</Td>
                           </Tr>
                         ))}

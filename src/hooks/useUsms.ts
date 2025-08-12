@@ -13,6 +13,7 @@ export type Usm = {
   weekdayDescriptions: string[];
   latitude: number;
   longitude: number;
+  type: 'UPA' | 'UBS';
 }
 
 export type GetUsmsResponse = {
