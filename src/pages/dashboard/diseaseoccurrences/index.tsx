@@ -117,7 +117,7 @@ export default function DiseaseOccurrences() {
                         <Tr key={diseaseOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
                             <NextLink 
-                              href={`/dashboard/patients/diseasehistory/${diseaseOccurrence.patient_id}/${diseaseOccurrence.id}`} 
+                              href={`/dashboard/patients/diseasehistory/${diseaseOccurrence.patientId}/${diseaseOccurrence.id}`} 
                               passHref
                             >
                               <Link color="blue.500" fontWeight="semibold">
@@ -126,14 +126,14 @@ export default function DiseaseOccurrences() {
                             </NextLink>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.disease_name}</Text>
+                            <Text>{diseaseOccurrence.diseaseName}</Text>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.date_start}</Text>
+                            <Text>{diseaseOccurrence.dateStart}</Text>
                           </Td>
                           <Td>
-                            { diseaseOccurrence.date_end ? (
-                              <Text>{diseaseOccurrence.date_end}</Text>
+                            { diseaseOccurrence.dateEnd ? (
+                              <Text>{diseaseOccurrence.dateEnd}</Text>
                             ) : (
                               <Badge colorScheme="green">
                                 Em andamento
