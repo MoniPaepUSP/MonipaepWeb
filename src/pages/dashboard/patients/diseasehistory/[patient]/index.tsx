@@ -3,23 +3,23 @@ import Head from "next/head"
 import NextLink from "next/link"
 import { debounce } from "ts-debounce"
 
-import { 
-  Badge, 
-  Box, 
-  Flex, 
+import {
+  Badge,
+  Box,
+  Flex,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
   Link,
-  Table, 
-  Tbody, 
-  Td, 
-  Text, 
-  Th, 
-  Thead, 
-  Tr, 
-  Select, 
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Select,
   Spinner,
 } from "@chakra-ui/react";
 import { MdSearch } from 'react-icons/md'
@@ -35,11 +35,11 @@ interface PatientDiseaseHistoryProps {
 }
 
 function getBadgeColor(status: string) {
-  if(status === "Saudável" || status === "Curado") {
+  if (status === "Saudável" || status === "Curado") {
     return "green"
-  } else if(status === "Suspeito") {
+  } else if (status === "Suspeito") {
     return "yellow"
-  } else if(status === "Infectado") {
+  } else if (status === "Infectado") {
     return "red"
   } else {
     return "purple"
@@ -48,9 +48,9 @@ function getBadgeColor(status: string) {
 
 export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHistoryProps) {
   const [page, setPage] = useState(1)
-  const [filter, setFilter] = useState('disease_name')
+  const [filter, setFilter] = useState('diseaseName')
   const [search, setSearch] = useState('')
-  const { data , isLoading, isFetching, error } = usePatientDiseaseHistory({ page, patientId, filter: [filter, search]})
+  const { data, isLoading, isFetching, error } = usePatientDiseaseHistory({ page, patientId, filter: [filter, search] })
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setPage(1)
@@ -58,18 +58,18 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
   }, [])
 
   const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)  
-  , [handleChangeInput]) 
-  
+    () => debounce(handleChangeInput, 600)
+    , [handleChangeInput])
+
   return (
     <PatientDataWrapper id={patientId} isFetching={isFetching} isLoading={isLoading}>
       <Head>
         <title>MoniPaEp | Histórico de doenças</title>
       </Head>
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" mt="9">
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg" mt="10"/>
+            <Spinner size="lg" mt="10" />
           </Box>
         ) : error ? (
           <Flex mx="8" mt="2" alignItems="flex-start" justifyContent="flex-start">
@@ -77,25 +77,25 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
           </Flex>
         ) : (
           <>
-            { (data?.totalDiseaseOccurrences === 0 && search === '') ? <></> : (
+            {(data?.totalDiseaseOccurrences === 0 && search === '') ? <></> : (
               <Flex mx="8" mb="8">
                 <InputGroup w="30">
                   <InputLeftElement>
-                    <Icon as={MdSearch} fontSize="xl" color="gray.400"/>
+                    <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                   </InputLeftElement>
-                  <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler}/>
+                  <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
                 </InputGroup>
-                <Select w="32" onChange={e => {setFilter(e.target.value)}} ml="2">
-                  <option value="disease_name">Doença</option>
+                <Select w="32" onChange={e => { setFilter(e.target.value) }} ml="2">
+                  <option value="diseaseName">Doença</option>
                   <option value="status">Status</option>
-                </Select>            
+                </Select>
               </Flex>
-            )}  
+            )}
 
             <Flex direction="column" w="100%" overflow="auto" px="8">
-              { data?.totalDiseaseOccurrences === 0 ? (
+              {data?.totalDiseaseOccurrences === 0 ? (
                 <Text>
-                  { search === '' ? 
+                  {search === '' ?
                     'Não existem ocorrências de doença registradas até o momento para este paciente.' :
                     'A busca não encontrou nenhuma ocorrência de doença com esse filtro.'
                   }
@@ -105,7 +105,7 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
                   <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
-                        <Th>Doença</Th>
+                        <Th>Doenças suspeitas</Th>
                         <Th>Data de início</Th>
                         <Th>Data de término</Th>
                         <Th>Status</Th>
@@ -113,29 +113,29 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
                     </Thead>
 
                     <Tbody>
-                      { data?.diseaseOccurrences.map(diseaseOccurrence => (
+                      {data?.diseaseOccurrences.map(diseaseOccurrence => (
                         <Tr key={diseaseOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
-                            <NextLink 
-                              href={`/dashboard/patients/diseasehistory/${patientId}/${diseaseOccurrence.id}`} 
+                            <NextLink
+                              href={`/dashboard/patients/diseasehistory/${patientId}/${diseaseOccurrence.id}`}
                               passHref
                             >
                               <Link color="blue.500" fontWeight="semibold">
-                                {diseaseOccurrence.disease.name}
+                                {diseaseOccurrence.diseases.map(d => d.name).join(', ')}
                               </Link>
                             </NextLink>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.dateStart}</Text>
+                            <Text>{diseaseOccurrence.dateStartFormatted}</Text>
                           </Td>
                           <Td>
-                            { diseaseOccurrence.dateEnd ? (
-                              <Text>{diseaseOccurrence.dateEnd}</Text>
+                            {diseaseOccurrence.dateEndFormatted ? (
+                              <Text>{diseaseOccurrence.dateEndFormatted}</Text>
                             ) : (
                               <Badge colorScheme="green">
                                 Em andamento
                               </Badge>
-                            ) }
+                            )}
                           </Td>
                           <Td>
                             <Badge colorScheme={getBadgeColor(diseaseOccurrence.status)}>
@@ -146,11 +146,11 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
                       ))}
                     </Tbody>
                   </Table>
-                  
+
                   <Box w="100%" mt="3" mb="5">
-                    <Pagination 
-                      currentPage={page} 
-                      totalRegisters={data?.totalDiseaseOccurrences} 
+                    <Pagination
+                      currentPage={page}
+                      totalRegisters={data?.totalDiseaseOccurrences}
                       onPageChange={setPage}
                     />
                   </Box>
@@ -166,11 +166,11 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
 
 PatientDiseaseHistory.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   const params = ctx.params
-  return { 
-    props: { 
-      patientId: params?.patient 
-    } 
+  return {
+    props: {
+      patientId: params?.patient
+    }
   }
 })

@@ -3,23 +3,26 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
+import { Disease } from "./useDiseases";
 
-type DiseaseOccurrences = {
+export type DiseaseOccurrence = {
   id: string;
   patientId: string;
-  diseaseName: string;
+  diseases: Disease[];
   diagnosis: string;
   dateStart: string;
-  dateEnd: string | null;
+  dateEnd?: string;
   status: string;
   patient: {
     name: string;
     email: string;
   };
+  dateStartFormatted?: string;
+  dateEndFormatted?: string;
 }
 
 type GetDiseaseOccurrencesResponse = {
-  diseaseOccurrences: DiseaseOccurrences[],
+  diseaseOccurrences: DiseaseOccurrence[],
   totalDiseaseOccurrences: number,
 }
 
@@ -36,24 +39,25 @@ interface UseDiseaseOccurrencesProps {
 export async function getDiseaseOccurrences(page: number, filter?: FilterDiseaseOccurrences) {
   let params = { page }
 
-  if(filter) {
+  if (filter) {
     params = { ...params, [filter[0]]: filter[1] }
   }
 
   const { data } = await api.get<GetDiseaseOccurrencesResponse>('/diseaseoccurrence', { params })
+  console.log(data);
 
   const formattedData = data.diseaseOccurrences.map(diseaseOccurrence => {
     const dateStartFormatted = format(parseISO(diseaseOccurrence.dateStart), 'P', { locale: ptBR })
     let dateEndFormatted = diseaseOccurrence.dateEnd
 
-    if(dateEndFormatted) {
+    if (dateEndFormatted) {
       dateEndFormatted = format(parseISO(dateEndFormatted), 'P', { locale: ptBR })
     }
 
     return {
       ...diseaseOccurrence,
-      date_start: dateStartFormatted,
-      date_end: dateEndFormatted
+      dateStartFormatted: dateStartFormatted,
+      dateEndFormatted: dateEndFormatted
     }
   })
 
@@ -64,10 +68,10 @@ export async function getDiseaseOccurrences(page: number, filter?: FilterDisease
   return diseaseOccurrences
 }
 
-export function useDiseaseOccurrences({ page, filter = ['patient_name', ''] }: UseDiseaseOccurrencesProps) {
-  const key = filter[1] === '' ? page : `${filter[0]}-${filter[1]}-${page}` 
+export function useDiseaseOccurrences({ page, filter = ['patientName', ''] }: UseDiseaseOccurrencesProps) {
+  const key = filter[1] === '' ? page : `${filter[0]}-${filter[1]}-${page}`
   return useQuery(['diseaseOccurrences', key], () => {
-    if(!filter || filter[1] === '') {
+    if (!filter || filter[1] === '') {
       return getDiseaseOccurrences(page)
     }
     return getDiseaseOccurrences(page, filter)

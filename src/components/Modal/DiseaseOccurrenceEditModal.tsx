@@ -18,24 +18,19 @@ import {
   Textarea,
   useToast,
   VStack,
+  Spinner,
+  SimpleGrid,
 } from '@chakra-ui/react';
 
 import { api } from '../../services/apiClient';
+import { DiseaseOccurrence } from '../../hooks/useDiseaseOccurrences';
+import { GetDiseaseOccurrencesResponse } from '../../hooks/usePatientDiseaseOccurrence';
+import { useDiseases } from '../../hooks/useDiseases';
 
 type GetDiseasesResponse = {
   diseases: {
     name: string;
-  } []
-}
-
-type DiseaseOccurrence = {
-  id: string;
-  patient_id: string;
-  disease_name: string;
-  diagnosis: string;
-  date_start: string;
-  date_end: string | null;
-  status: string;
+  }[]
 }
 
 interface DiseaseOccurrenceModalProps {
@@ -48,87 +43,79 @@ interface DiseaseOccurrenceModalProps {
 registerLocale('ptBR', ptBR)
 
 export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence, refetchData }: DiseaseOccurrenceModalProps) {
-  const [startDate, setStartDate] = useState(new Date(diseaseOccurrence.date_start))
-  const [endDate, setEndDate] = useState(diseaseOccurrence.date_end ? new Date(diseaseOccurrence.date_end) : null)
-  const [isOngoingOccurrence, setIsOngoingOccurrence] = useState(diseaseOccurrence.date_end ? false : true)
-  const [disease, setDisease] = useState(diseaseOccurrence.disease_name)
-  const [diseaseList, setDiseaseList] = useState<string[]>([diseaseOccurrence.disease_name, "Carregando..."])
+  const [startDate, setStartDate] = useState(new Date(diseaseOccurrence.dateStart))
+  const [endDate, setEndDate] = useState(diseaseOccurrence.dateEnd ? new Date(diseaseOccurrence.dateEnd) : null)
+  const [isOngoingOccurrence, setIsOngoingOccurrence] = useState(diseaseOccurrence.dateEnd ? false : true)
   const [diseaseStatus, setDiseaseStatus] = useState(diseaseOccurrence.status)
   const [diagnosis, setDiagnosis] = useState(diseaseOccurrence.diagnosis)
   const [touched, setTouched] = useState(false)
   const [isUpdating, setIsUpdating] = useState(false)
   const toast = useToast()
 
+  const { data: diseaseData, isLoading: isLoadingDiseases, isFetching: isFetchingDiseases, error: errorDisease, refetch } = useDiseases({ page: 1 })
+  const [selectedDiseaseIds, setSelectedDiseaseIds] = useState<string[]>(diseaseOccurrence.diseases.map((c: any) => c.id))
+
   useEffect(() => {
-    setStartDate(new Date(diseaseOccurrence.date_start))
-    setEndDate(diseaseOccurrence.date_end ? new Date(diseaseOccurrence.date_end) : null)
-    setIsOngoingOccurrence(diseaseOccurrence.date_end ? false : true)
-    setDisease(diseaseOccurrence.disease_name)
+    setStartDate(new Date(diseaseOccurrence.dateStart))
+    setEndDate(diseaseOccurrence.dateEnd ? new Date(diseaseOccurrence.dateEnd) : null)
+    setIsOngoingOccurrence(diseaseOccurrence.dateEnd ? false : true)
+    setSelectedDiseaseIds(diseaseOccurrence.diseases.map((c: any) => c.id))
     setDiseaseStatus(diseaseOccurrence.status)
     setDiagnosis(diseaseOccurrence.diagnosis)
   }, [diseaseOccurrence])
 
-  useEffect(() => {
-    const getDiseaseOptions = async() => {
-      const { data } = await api.get<GetDiseasesResponse>('/disease')
-      const diseaseList = data.diseases.map(disease => {
-        return disease.name
-      })
-      setDiseaseList(diseaseList)
-    }
-    getDiseaseOptions()
-  }, [isOpen])
-
   function handleStartDateChanged(date: Date) {
     setStartDate(date)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleEndDateChanged(date: Date) {
     setEndDate(date)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleDiseaseStatusChanged(event: ChangeEvent<HTMLSelectElement>) {
     setDiseaseStatus(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
-  function handleDiseaseChanged(event: ChangeEvent<HTMLSelectElement>) {
-    setDisease(event.target.value)
-    if(!touched) {
-      setTouched(true)
+  function handleCheckboxClick(diseaseId: string) {
+    setTouched(true)
+    if (selectedDiseaseIds.includes(diseaseId)) {
+      setSelectedDiseaseIds(selectedDiseaseIds.filter(id => id !== diseaseId))
+    } else {
+      setSelectedDiseaseIds([...selectedDiseaseIds, diseaseId])
     }
   }
 
   function handleDiagnosisInputChanged(event: ChangeEvent<HTMLTextAreaElement>) {
     setDiagnosis(event.target.value)
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleEndDateCheckbox(event: ChangeEvent<HTMLInputElement>) {
     setIsOngoingOccurrence(event.target.checked)
-    if(event.target.checked) {
+    if (event.target.checked) {
       setEndDate(null)
     }
-    if(!touched) {
+    if (!touched) {
       setTouched(true)
     }
   }
 
   function handleClose() {
-    setStartDate(new Date(diseaseOccurrence.date_start))
-    setEndDate(diseaseOccurrence.date_end ? new Date(diseaseOccurrence.date_end) : null)
-    setIsOngoingOccurrence(diseaseOccurrence.date_end ? false : true)
-    setDisease(diseaseOccurrence.disease_name)
+    setStartDate(new Date(diseaseOccurrence.dateStart))
+    setEndDate(diseaseOccurrence.dateEnd ? new Date(diseaseOccurrence.dateEnd) : null)
+    setIsOngoingOccurrence(diseaseOccurrence.dateEnd ? false : true)
+    setSelectedDiseaseIds(diseaseOccurrence.diseases.map((c: any) => c.id))
     setDiseaseStatus(diseaseOccurrence.status)
     setDiagnosis(diseaseOccurrence.diagnosis)
     setTouched(false)
@@ -136,15 +123,15 @@ export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence,
   }
 
   async function handleDiseaseOccurrenceUpdate() {
-    const startDateIsEqual = startDate.getTime() === (new Date(diseaseOccurrence.date_start)).getTime()
-    const endDateIsEqual = (endDate ? endDate.getTime() : null) === 
-                           (diseaseOccurrence.date_end ? new Date(diseaseOccurrence.date_end).getTime() : null)
+    const startDateIsEqual = startDate.getTime() === (new Date(diseaseOccurrence.dateStart)).getTime()
+    const endDateIsEqual = (endDate ? endDate.getTime() : null) ===
+      (diseaseOccurrence.dateEnd ? new Date(diseaseOccurrence.dateEnd).getTime() : null)
     const diagnosisIsEqual = diagnosis === diseaseOccurrence.diagnosis
-    const diseaseIsEqual = disease === diseaseOccurrence.disease_name
+    const diseaseIsEqual = selectedDiseaseIds === diseaseOccurrence.diseases.map(o => o.id)
     const diseaseStatusIsEqual = diseaseStatus === diseaseOccurrence.status
 
-    if(startDate && (isOngoingOccurrence || endDate ) && diagnosis && diseaseStatus && disease) {
-      if(startDateIsEqual && endDateIsEqual && diagnosisIsEqual && diseaseIsEqual && diseaseStatusIsEqual) {
+    if (startDate && (isOngoingOccurrence || endDate) && diagnosis && diseaseStatus && selectedDiseaseIds) {
+      if (startDateIsEqual && endDateIsEqual && diagnosisIsEqual && diseaseIsEqual && diseaseStatusIsEqual) {
         toast({
           title: "Erro na alteração da ocorrência",
           description: "Campos sem nenhuma alteração",
@@ -155,9 +142,9 @@ export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence,
         setIsUpdating(true)
         try {
           let body: any = {
-            disease_name: disease,
-            date_start: startDate,
-            date_end: isOngoingOccurrence ? null : endDate,
+            diseaseIds: selectedDiseaseIds,
+            dateStart: startDate,
+            dateEnd: isOngoingOccurrence ? null : endDate?.toISOString(),
             status: diseaseStatus,
             diagnosis,
           }
@@ -190,33 +177,53 @@ export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence,
       })
     }
   }
-  
+
   return (
-    <Modal 
-      motionPreset="slideInBottom" 
-      size="xl" 
-      isOpen={isOpen} 
-      onClose={handleClose} 
-      isCentered 
+    <Modal
+      motionPreset="slideInBottom"
+      size="xl"
+      isOpen={isOpen}
+      onClose={handleClose}
+      isCentered
       closeOnOverlayClick={false}
     >
       <ModalOverlay>
-        <ModalContent height="auto" width="380px">
+        <ModalContent height="auto" width="60vw">
           <ModalHeader textAlign="center">Editar ocorrência de doença</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack spacing="3" alignItems="flex-start">
-              <Text fontWeight="semibold">Doença</Text>
-              <Select value={disease} onChange={handleDiseaseChanged}>
-                { diseaseList.map(disease => (
-                  <option key={disease} value={disease}>{disease}</option>
-                ))}
-              </Select>
+              <Text fontWeight="semibold">Doenças suspeitas</Text>
+
+              {isLoadingDiseases ? (
+                <Spinner size="lg" mt="2" alignSelf="center" />
+              ) : (
+                <SimpleGrid
+                  w="100%"
+                  alignItems="center"
+                  spacing="4"
+                  minChildWidth="80px"
+                  columnGap="30px"
+                  rowGap="10px"
+                >
+                  {diseaseData?.diseases && (
+                    diseaseData.diseases.map(disease => (
+                      <Checkbox
+                        key={disease.id}
+                        isChecked={selectedDiseaseIds.includes(disease.id)}
+                        onChange={() => handleCheckboxClick(disease.id)}
+                      >
+                        {disease.name}
+                      </Checkbox>
+                    ))
+                  )}
+                </SimpleGrid>
+              )}
               <Text fontWeight="semibold">Data de início</Text>
               <Box w="100%">
-                <DatePicker 
+                <DatePicker
                   locale="ptBR"
-                  selected={startDate} 
+                  selected={startDate}
                   onChange={handleStartDateChanged}
                   showTimeSelect
                   timeFormat="p"
@@ -231,10 +238,10 @@ export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence,
                 </Checkbox>
               </Flex>
               <Box w="100%">
-                <DatePicker 
+                <DatePicker
                   locale="ptBR"
                   disabled={isOngoingOccurrence}
-                  selected={endDate} 
+                  selected={endDate}
                   onChange={handleEndDateChanged}
                   showTimeSelect
                   timeFormat="p"
@@ -243,23 +250,22 @@ export function DiseaseOccurrenceEditModal({ isOpen, onClose, diseaseOccurrence,
                 />
               </Box>
               <Text fontWeight="semibold">Diagnóstico</Text>
-              <Textarea value={diagnosis} onChange={handleDiagnosisInputChanged}  textAlign="justify"/>
+              <Textarea value={diagnosis} onChange={handleDiagnosisInputChanged} textAlign="justify" />
               <Text fontWeight="semibold">Status</Text>
               <Select value={diseaseStatus} onChange={handleDiseaseStatusChanged}>
                 <option value="Saudável">Saudável</option>
                 <option value="Suspeito">Suspeito</option>
                 <option value="Infectado">Infectado</option>
-                <option value="Curado">Curado</option>
                 <option value="Óbito">Óbito</option>
               </Select>
             </VStack>
           </ModalBody>
           <ModalFooter>
             <Button onClick={handleClose} mr="3">Cancelar</Button>
-            <Button 
-              onClick={handleDiseaseOccurrenceUpdate} 
-              colorScheme="blue" 
-              disabled={!touched} 
+            <Button
+              onClick={handleDiseaseOccurrenceUpdate}
+              colorScheme="blue"
+              disabled={!touched}
               isLoading={isUpdating}
             >
               Atualizar

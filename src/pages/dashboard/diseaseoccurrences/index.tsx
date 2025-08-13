@@ -3,24 +3,24 @@ import Head from "next/head"
 import NextLink from "next/link"
 import { debounce } from "ts-debounce"
 
-import { 
-  Badge, 
-  Box, 
-  Flex, 
-  Heading, 
+import {
+  Badge,
+  Box,
+  Flex,
+  Heading,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
   Link,
-  Table, 
-  Tbody, 
-  Td, 
-  Text, 
-  Th, 
-  Thead, 
-  Tr, 
-  Select, 
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  Select,
   Spinner,
 } from "@chakra-ui/react";
 import { MdSearch } from 'react-icons/md'
@@ -31,11 +31,11 @@ import { Pagination } from "../../../components/Pagination";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 
 function getBadgeColor(status: string) {
-  if(status === "Saudável" || status === "Curado") {
+  if (status === "Saudável" || status === "Curado") {
     return "green"
-  } else if(status === "Suspeito") {
+  } else if (status === "Suspeito") {
     return "yellow"
-  } else if(status === "Infectado") {
+  } else if (status === "Infectado") {
     return "red"
   } else {
     return "purple"
@@ -46,7 +46,7 @@ export default function DiseaseOccurrences() {
   const [page, setPage] = useState(1)
   const [filter, setFilter] = useState('patient_name')
   const [search, setSearch] = useState('')
-  const { data , isLoading, isFetching, error } = useDiseaseOccurrences({ page, filter: [filter, search]})
+  const { data, isLoading, isFetching, error } = useDiseaseOccurrences({ page, filter: [filter, search] })
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setPage(1)
@@ -54,9 +54,9 @@ export default function DiseaseOccurrences() {
   }, [])
 
   const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)  
-  , [handleChangeInput]) 
-  
+    () => debounce(handleChangeInput, 600)
+    , [handleChangeInput])
+
   return (
     <>
       <Head>
@@ -65,11 +65,11 @@ export default function DiseaseOccurrences() {
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
         <Heading ml="8" my="6">
           Ocorrências de doenças
-          { !isLoading && isFetching && <Spinner ml="4"/> }
+          {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
-        { isLoading ? (
+        {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg"/>
+            <Spinner size="lg" />
           </Box>
         ) : error ? (
           <Flex mx="8" mt="2" alignItems="flex-start" justifyContent="flex-start">
@@ -80,21 +80,21 @@ export default function DiseaseOccurrences() {
             <Flex mx="8" mb="8">
               <InputGroup w="30">
                 <InputLeftElement>
-                  <Icon as={MdSearch} fontSize="xl" color="gray.400"/>
+                  <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
-                <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler}/>
+                <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
-              <Select w="32" onChange={e => {setFilter(e.target.value)}} ml="2">
+              <Select w="32" onChange={e => { setFilter(e.target.value) }} ml="2">
                 <option value="patient_name">Paciente</option>
                 <option value="disease_name">Doença</option>
                 <option value="status">Status</option>
-              </Select>            
+              </Select>
             </Flex>
 
             <Flex direction="column" w="100%" overflow="auto" px="8">
-              { data?.totalDiseaseOccurrences === 0 ? (
+              {data?.totalDiseaseOccurrences === 0 ? (
                 <Text mt="2">
-                  { search === '' ? 
+                  {search === '' ?
                     'Não existem ocorrências de doença registradas até o momento.' :
                     'A busca não encontrou nenhuma ocorrência de doença com esse filtro.'
                   }
@@ -105,7 +105,7 @@ export default function DiseaseOccurrences() {
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Paciente</Th>
-                        <Th>Doença</Th>
+                        <Th>Doenças suspeitas</Th>
                         <Th>Data de início</Th>
                         <Th>Data de término</Th>
                         <Th>Status</Th>
@@ -113,11 +113,11 @@ export default function DiseaseOccurrences() {
                     </Thead>
 
                     <Tbody>
-                      { data?.diseaseOccurrences.map(diseaseOccurrence => (
+                      {data?.diseaseOccurrences.map(diseaseOccurrence => (
                         <Tr key={diseaseOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
                           <Td>
-                            <NextLink 
-                              href={`/dashboard/patients/diseasehistory/${diseaseOccurrence.patientId}/${diseaseOccurrence.id}`} 
+                            <NextLink
+                              href={`/dashboard/patients/diseasehistory/${diseaseOccurrence.patientId}/${diseaseOccurrence.id}`}
                               passHref
                             >
                               <Link color="blue.500" fontWeight="semibold">
@@ -126,19 +126,19 @@ export default function DiseaseOccurrences() {
                             </NextLink>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.diseaseName}</Text>
+                            <Text>{diseaseOccurrence.diseases.map(d => d.name).join(', ')}</Text>
                           </Td>
                           <Td>
-                            <Text>{diseaseOccurrence.dateStart}</Text>
+                            <Text>{diseaseOccurrence.dateStartFormatted}</Text>
                           </Td>
                           <Td>
-                            { diseaseOccurrence.dateEnd ? (
-                              <Text>{diseaseOccurrence.dateEnd}</Text>
+                            {diseaseOccurrence.dateEndFormatted ? (
+                              <Text>{diseaseOccurrence.dateEndFormatted}</Text>
                             ) : (
                               <Badge colorScheme="green">
                                 Em andamento
                               </Badge>
-                            ) }
+                            )}
                           </Td>
                           <Td>
                             <Badge colorScheme={getBadgeColor(diseaseOccurrence.status)}>
@@ -149,11 +149,11 @@ export default function DiseaseOccurrences() {
                       ))}
                     </Tbody>
                   </Table>
-                  
+
                   <Box w="100%" mt="3" mb="5">
-                    <Pagination 
-                      currentPage={page} 
-                      totalRegisters={data?.totalDiseaseOccurrences} 
+                    <Pagination
+                      currentPage={page}
+                      totalRegisters={data?.totalDiseaseOccurrences}
                       onPageChange={setPage}
                     />
                   </Box>
@@ -169,6 +169,6 @@ export default function DiseaseOccurrences() {
 
 DiseaseOccurrences.layout = DashboardLayout
 
-export const getServerSideProps = withSSRAuth(async (ctx) => { 
+export const getServerSideProps = withSSRAuth(async (ctx) => {
   return { props: {} }
 })
