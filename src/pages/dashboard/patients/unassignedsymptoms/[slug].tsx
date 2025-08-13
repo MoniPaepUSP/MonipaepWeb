@@ -42,7 +42,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
   const [page, setPage] = useState(1)
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [diseaseStatus, setDiseaseStatus] = useState('Suspeito')
-  const [selectedDiseases, setSelectedDiseases] = useState<string[]>([])
+  const [selectedDiseaseIds, setSelectedDiseaseIds] = useState<string[]>([])
   const [diagnosis, setDiagnosis] = useState('')
   const [isPosting, setIsPosting] = useState(false)
   const { data: diseaseData, isLoading: isLoadingDiseases, isFetching: isFetchingDiseases, error: errorDisease, refetch } = useDiseases({ page })
@@ -62,31 +62,33 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
   }
 
   function handleCheckboxClick(diseaseId: string) {
-    if (selectedDiseases.includes(diseaseId)) {
-      setSelectedDiseases(selectedDiseases.filter(id => id !== diseaseId))
+    if (selectedDiseaseIds.includes(diseaseId)) {
+      setSelectedDiseaseIds(selectedDiseaseIds.filter(id => id !== diseaseId))
     } else {
-      setSelectedDiseases([...selectedDiseases, diseaseId])
+      setSelectedDiseaseIds([...selectedDiseaseIds, diseaseId])
     }
   }
 
   async function handleDiseaseOccurrenceCreation() {
-    if (startDate && diagnosis !== '' && selectedDiseases.length > 0) {
+    if (startDate && diagnosis !== '' && selectedDiseaseIds.length > 0) {
       setIsPosting(true)
       try {
+        console.log(selectedDiseaseIds);
         const { data } = await api.post('/diseaseoccurrence', {
-          patient_id: patientId,
-          disease_name: selectedDiseases,
+          patientId,
+          diseaseIds: selectedDiseaseIds,
           status: diseaseStatus,
-          date_start: startDate,
+          dateStart: startDate.toISOString(),
           diagnosis,
         })
+        console.log(data);
         toast({
           title: "Sucesso na criação da ocorrência",
           description: data?.success,
           status: "success",
           isClosable: true
         })
-        Router.push(`/dashboard/patients/diseasehistory/${patientId}/${data.createdDiseaseOccurrences[0].id}`)
+        Router.push(`/dashboard/patients/diseasehistory/${patientId}/${data.diseaseOccurrence.id}`)
       } catch (error: any) {
         toast({
           title: "Erro na criação da ocorrência",
@@ -213,7 +215,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                             diseaseData.diseases.map(disease => (
                               <Checkbox
                                 key={disease.id}
-                                isChecked={selectedDiseases.includes(disease.id)}
+                                isChecked={selectedDiseaseIds.includes(disease.id)}
                                 onChange={() => handleCheckboxClick(disease.id)}
                               >
                                 {disease.name}
@@ -229,7 +231,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                     mt="6"
                     colorScheme="blue"
                     isLoading={isPosting}
-                    disabled={diseaseData?.diseases && selectedDiseases.length === 0}
+                    disabled={diseaseData?.diseases && selectedDiseaseIds.length === 0}
                     onClick={handleDiseaseOccurrenceCreation}
                   >
                     Registrar ocorrência de doença

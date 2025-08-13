@@ -3,34 +3,11 @@ import { format, parseISO } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
 
 import { api } from "../services/apiClient";
-import { Symptom } from "./useSymptoms";
-import { Patient } from "./usePatients";
-
-type ProbableDiseases = {
-  id: string;
-  name: string;
-  isPatientInRiskGroup: boolean;
-  suspicionScore: number;
-}
+import { SymptomOccurrence } from "./useSymptomOccurrences";
 
 export type SymptomOccurrencesResponse = {
   symptomOccurrences: SymptomOccurrence[];
   totalSymptomOccurrences: number;
-}
-
-export type SymptomOccurrence = {
-  id: string;
-  chat: boolean;
-  symptoms: Symptom[];
-  remarks?: string;
-  instructions?: string;
-  isPatientInRiskGroup: boolean;
-  referUSM?: string;
-  patient: Patient;
-  registeredDate: string;
-  formattedDate?: string;
-  diseaseOccurrenceId?: string;
-  probableDiseases: ProbableDiseases;
 }
 
 interface UsePatientSymptomOccurrencesProps {
