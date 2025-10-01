@@ -1,10 +1,6 @@
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import NextLink from 'next/link'
-import Head from "next/head"
-import { debounce } from "ts-debounce"
-
-import { withSSRAuth } from "../../../utils/withSSRAuth";
-
+import Head from "next/head";
+import { debounce } from "ts-debounce";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 import { Pagination } from "../../../components/Pagination";
 import {
@@ -17,7 +13,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Select,
   Spinner,
   Table,
   Tbody,
@@ -28,49 +23,42 @@ import {
   Tr,
   useDisclosure,
 } from "@chakra-ui/react";
-import { BiPencil, BiTrash } from 'react-icons/bi'
-import { MdSearch } from 'react-icons/md'
+import { BiPencil, BiTrash } from "react-icons/bi";
+import { MdSearch } from "react-icons/md";
+
+import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { SystemUser, useSystemUsers } from "../../../hooks/useSystemUsers";
-import { SystemUserExcludeAlert } from "../../../components/AlertDialog/SystemUserExcludeAlert";
 import { SystemUserEditModal } from "../../../components/Modal/SystemUserEditModal";
+import { SystemUserExcludeAlert } from "../../../components/AlertDialog/SystemUserExcludeAlert";
 import { useCan } from "../../../hooks/useCan";
 
 export default function SystemUsers() {
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [userToBeEdited, setUserToBeEdited] = useState<SystemUser | undefined>(undefined)
-  const [userToBeDeleted, setUserToBeDeleted] = useState<SystemUser | undefined>(undefined)
-  const isGeneralAdm = useCan({ roles: ['general.admin'] })
-  const { data, isLoading, isFetching, error, refetch } = useSystemUsers({ page, filter: search })
-  const {
-    isOpen: isOpenEditModal,
-    onOpen: onOpenEditModal,
-    onClose: onCloseEditModal
-  } = useDisclosure()
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [userToBeEdited, setUserToBeEdited] = useState<SystemUser | undefined>(undefined);
+  const [userToBeDeleted, setUserToBeDeleted] = useState<SystemUser | undefined>(undefined);
 
-  const {
-    isOpen: isOpenExcludeAlert,
-    onOpen: onOpenExcludeAlert,
-    onClose: onCloseExcludeAlert
-  } = useDisclosure()
+  const isGeneralAdm = useCan({ roles: ["general.admin"] });
+  const { data, isLoading, isFetching, error, refetch } = useSystemUsers({ page, filter: search });
+
+  const { isOpen: isOpenEditModal, onOpen: onOpenEditModal, onClose: onCloseEditModal } = useDisclosure();
+  const { isOpen: isOpenExcludeAlert, onOpen: onOpenExcludeAlert, onClose: onCloseExcludeAlert } = useDisclosure();
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPage(1)
-    setSearch(event.target.value)
-  }, [])
+    setPage(1);
+    setSearch(event.target.value);
+  }, []);
 
-  const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)
-    , [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput]);
 
   function handleEditUser(user: SystemUser) {
-    setUserToBeEdited(user)
-    onOpenEditModal()
+    setUserToBeEdited(user);
+    onOpenEditModal();
   }
 
   function handleDeleteUser(user: SystemUser) {
-    setUserToBeDeleted(user)
-    onOpenExcludeAlert()
+    setUserToBeDeleted(user);
+    onOpenExcludeAlert();
   }
 
   return (
@@ -78,28 +66,25 @@ export default function SystemUsers() {
       <Head>
         <title>MoniPaEp | Usuários do sistema</title>
       </Head>
-      <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
-        <Heading ml="8" my="6">
+
+      <Flex direction="column" w="100%" bgColor="white" borderRadius="4">
+        <Heading ml={{ base: 4, md: 8 }} my={6} fontSize={{ base: "xl", md: "3xl" }}>
           Usuários do sistema
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
+
         {isLoading ? (
-          <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Spinner size="lg" />
-          </Box>
+          </Flex>
         ) : error ? (
-          <Box w="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" justify="center" align="center">
             <Text>Erro ao carregar os dados</Text>
-          </Box>
+          </Flex>
         ) : (
           <>
             {userToBeEdited && (
-              <SystemUserEditModal
-                isOpen={isOpenEditModal}
-                onClose={onCloseEditModal}
-                systemUser={userToBeEdited}
-                refetchList={refetch}
-              />
+              <SystemUserEditModal isOpen={isOpenEditModal} onClose={onCloseEditModal} systemUser={userToBeEdited} refetchList={refetch} />
             )}
 
             {userToBeDeleted && (
@@ -111,8 +96,9 @@ export default function SystemUsers() {
               />
             )}
 
-            <Flex mx="8" mb="8">
-              <InputGroup w="30">
+            {/* Input de busca */}
+            <Flex mx={{ base: 4, md: 8 }} mb={4}>
+              <InputGroup w={{ base: "100%", md: "30%" }}>
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
@@ -120,113 +106,83 @@ export default function SystemUsers() {
               </InputGroup>
             </Flex>
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
               {data?.totalSystemUsers === 0 ? (
-                <Text mt="2">
-                  {search === '' ?
-                    'Não existem usuários registrados até o momento.' :
-                    'A busca não encontrou nenhum usuário com esse nome.'
-                  }
+                <Text mt="2" mb="6">
+                  {search === "" ? "Não existem usuários registrados até o momento." : "A busca não encontrou nenhum usuário com esse nome."}
                 </Text>
               ) : (
-                <>
-                  <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Nome</Th>
-                        <Th>Setor</Th>
-                        <Th>Autorizado</Th>
-                        <Th>Administrador local</Th>
-                        <Th>Administrador geral</Th>
-                        <Th></Th>
+                <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                  <Thead bgColor="gray.200">
+                    <Tr>
+                      <Th>Nome</Th>
+                      <Th>Setor</Th>
+                      <Th>Autorizado</Th>
+                      <Th>Administrador local</Th>
+                      <Th>Administrador geral</Th>
+                      <Th minW="80px"></Th>
+                    </Tr>
+                  </Thead>
+
+                  <Tbody>
+                    {data?.systemUsers.map((systemUser) => (
+                      <Tr key={systemUser.user.id} _hover={{ bgColor: "gray.50" }}>
+                        <Td>
+                          <Box textAlign="left">
+                            <Text>{systemUser.user.name}</Text>
+                            <Text fontSize="sm" color="gray.500">{systemUser.user.email}</Text>
+                          </Box>
+                        </Td>
+                        <Td>
+                          <Badge colorScheme={systemUser.user.department === "USM" ? "purple" : "orange"}>
+                            {systemUser.user.department === "USM" ? "Unidade de Saúde" : "Vigilância em Saúde"}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Badge colorScheme={systemUser.authorized ? "green" : "red"}>
+                            {systemUser.authorized ? "Sim" : "Não"}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Badge colorScheme={systemUser.localAdm ? "green" : "red"}>
+                            {systemUser.localAdm ? "Sim" : "Não"}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Badge colorScheme={systemUser.generalAdm ? "green" : "red"}>
+                            {systemUser.generalAdm ? "Sim" : "Não"}
+                          </Badge>
+                        </Td>
+                        <Td>
+                          <Flex direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }} gap={2} justify="flex-end">
+                            <Button fontSize="lg" h="36px" w="36px" colorScheme="blue" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleEditUser(systemUser)}>
+                              <Icon as={BiPencil} />
+                            </Button>
+                            <Button fontSize="lg" h="36px" w="36px" colorScheme="red" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleDeleteUser(systemUser)}>
+                              <Icon as={BiTrash} />
+                            </Button>
+                          </Flex>
+                        </Td>
                       </Tr>
-                    </Thead>
-
-                    <Tbody>
-                      {data?.systemUsers.map(systemUser => (
-                        <Tr key={systemUser.user.id} _hover={{ bgColor: 'gray.50' }}>
-                          <Td>
-                            <Box textAlign="left">
-                              <Text>{systemUser.user.name}</Text>
-                              <Text fontSize="sm" color="gray.500">
-                                {systemUser.user.email}
-                              </Text>
-                            </Box>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={systemUser.user.department === 'USM' ? 'purple' : 'orange'}>
-                              {systemUser.user.department === 'USM' ?
-                                'Unidade de Saúde' :
-                                'Vigilância em Saúde'
-                              }
-                            </Badge>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={systemUser.authorized ? 'green' : 'red'}>
-                              {systemUser.authorized ? 'Sim' : 'Não'}
-                            </Badge>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={systemUser.localAdm ? 'green' : 'red'}>
-                              {systemUser.localAdm ? 'Sim' : 'Não'}
-                            </Badge>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={systemUser.generalAdm ? 'green' : 'red'}>
-                              {systemUser.generalAdm ? 'Sim' : 'Não'}
-                            </Badge>
-                          </Td>
-                          <Td pr="4">
-                            <Flex justifyContent="flex-end" alignItems="center">
-                              <Button
-                                fontSize="lg"
-                                height="36px"
-                                width="36px"
-                                colorScheme="blue"
-                                disabled={systemUser.generalAdm && !isGeneralAdm}
-                                onClick={() => handleEditUser(systemUser)}
-                              >
-                                <Icon as={BiPencil} />
-                              </Button>
-                              <Button
-                                fontSize="lg"
-                                height="36px"
-                                ml="2"
-                                width="36px"
-                                colorScheme="red"
-                                disabled={systemUser.generalAdm && !isGeneralAdm}
-                                onClick={() => handleDeleteUser(systemUser)}
-                              >
-                                <Icon as={BiTrash} />
-                              </Button>
-                            </Flex>
-                          </Td>
-                        </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
-
-                  <Box w="100%" mt="3" mb="5">
-                    <Pagination
-                      currentPage={page}
-                      totalRegisters={data?.totalSystemUsers}
-                      onPageChange={setPage}
-                    />
-                  </Box>
-                </>
+                    ))}
+                  </Tbody>
+                </Table>
               )}
-            </Flex>
+
+              <Box w="100%" mt="3" mb="5">
+                <Pagination currentPage={page} totalRegisters={data?.totalSystemUsers} onPageChange={setPage} />
+              </Box>
+            </Box>
           </>
         )}
       </Flex>
     </>
-  )
+  );
 }
 
-SystemUsers.layout = DashboardLayout
+SystemUsers.layout = DashboardLayout;
 
-export const getServerSideProps = withSSRAuth(async (ctx) => {
-  return { props: {} }
-}, {
-  roles: ['local.admin', 'general.admin']
-})
+export const getServerSideProps = withSSRAuth(
+  async (ctx) => ({ props: {} }),
+  { roles: ["local.admin", "general.admin"] }
+);

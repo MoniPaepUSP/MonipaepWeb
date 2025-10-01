@@ -1,8 +1,9 @@
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import Head from "next/head"
-import NextLink from "next/link"
-import { debounce } from "ts-debounce"
-
+import Head from "next/head";
+import NextLink from "next/link";
+import { debounce } from "ts-debounce";
+import DashboardLayout from "../../../components/Layouts/DashboardLayout";
+import { Pagination } from "../../../components/Pagination";
 import {
   Badge,
   Box,
@@ -23,68 +24,67 @@ import {
   Select,
   Spinner,
 } from "@chakra-ui/react";
-import { MdSearch } from 'react-icons/md'
-
+import { MdSearch } from "react-icons/md";
 import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { usePatients } from "../../../hooks/usePatients";
-import { Pagination } from "../../../components/Pagination";
-import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 
 function getBadgeColor(status: string) {
-  if (status === "Saudável") {
-    return "green"
-  } else if (status === "Suspeito") {
-    return "yellow"
-  } else if (status === "Infectado") {
-    return "red"
-  } else {
-    return "purple"
+  switch (status) {
+    case "Saudável":
+      return "green";
+    case "Suspeito":
+      return "yellow";
+    case "Infectado":
+      return "red";
+    default:
+      return "purple";
   }
 }
 
 export default function Patients() {
-  const [page, setPage] = useState(1)
-  const [filter, setFilter] = useState('name')
-  const [search, setSearch] = useState('')
-  const { data, isLoading, isFetching, error } = usePatients({ page, filter: [filter, search] })
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState("name");
+  const [search, setSearch] = useState("");
+  const { data, isLoading, isFetching, error } = usePatients({ page, filter: [filter, search] });
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPage(1)
-    setSearch(event.target.value)
-  }, [])
+    setPage(1);
+    setSearch(event.target.value);
+  }, []);
 
-  const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)
-    , [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput]);
 
   return (
     <>
       <Head>
         <title>MoniPaEp | Pacientes</title>
       </Head>
-      <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
-        <Heading ml="8" my="6">
+
+      <Flex direction="column" w="100%" bgColor="white" borderRadius="4">
+        <Heading ml={{ base: 4, md: 8 }} my={6} fontSize={{ base: "xl", md: "3xl" }}>
           Pacientes
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
+
         {isLoading ? (
-          <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Spinner size="lg" />
-          </Box>
+          </Flex>
         ) : error ? (
-          <Box w="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex mx={{ base: 4, md: 8 }} mt={2} align="flex-start">
             <Text>Erro ao carregar os dados</Text>
-          </Box>
+          </Flex>
         ) : (
           <>
-            <Flex mx="8" mb="8">
-              <InputGroup w="30">
+            {/* Filtros */}
+            <Flex mx={{ base: 4, md: 8 }} mb={4} flexWrap="wrap" gap={2}>
+              <InputGroup w={{ base: "100%", md: "30%" }}>
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
                 <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
-              <Select w="32" onChange={e => { setFilter(e.target.value) }} ml="2">
+              <Select w={{ base: "100%", md: "32" }} value={filter} onChange={(e) => setFilter(e.target.value)}>
                 <option value="name">Nome</option>
                 <option value="cpf">CPF</option>
                 <option value="gender">Gênero</option>
@@ -93,17 +93,16 @@ export default function Patients() {
               </Select>
             </Flex>
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
               {data?.totalPatients === 0 ? (
-                <Text mt="2">
-                  {search === '' ?
-                    'Não existem pacientes registrados até o momento.' :
-                    'A busca não encontrou nenhum paciente com esse filtro.'
-                  }
+                <Text mt="2" mb="6">
+                  {search === ""
+                    ? "Não existem pacientes registrados até o momento."
+                    : "A busca não encontrou nenhum paciente com esse filtro."}
                 </Text>
               ) : (
                 <>
-                  <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Nome</Th>
@@ -117,11 +116,8 @@ export default function Patients() {
                     </Thead>
 
                     <Tbody>
-                      {data?.patients.map(patient => (
-                        <Tr
-                          key={patient.id}
-                          _hover={{ bgColor: 'gray.50' }}
-                        >
+                      {data?.patients.map((patient) => (
+                        <Tr key={patient.id} _hover={{ bgColor: "gray.50" }}>
                           <Td>
                             <NextLink href={`/dashboard/patients/details/${patient.id}`} passHref>
                               <Link color="blue.500" fontWeight="semibold">
@@ -129,27 +125,17 @@ export default function Patients() {
                               </Link>
                             </NextLink>
                           </Td>
+                          <Td>{patient.gender}</Td>
+                          <Td>{patient.cpf}</Td>
+                          <Td>{patient.birthdate}</Td>
+                          <Td>{patient.neighborhood}</Td>
                           <Td>
-                            <Text>{patient.gender}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{patient.cpf}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{patient.birthdate}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{patient.neighborhood}</Text>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={patient.hasHealthPlan ? 'green' : 'red'}>
-                              {patient.hasHealthPlan ? 'Possui' : 'Não possui'}
+                            <Badge colorScheme={patient.hasHealthPlan ? "green" : "red"}>
+                              {patient.hasHealthPlan ? "Possui" : "Não possui"}
                             </Badge>
                           </Td>
                           <Td>
-                            <Badge colorScheme={getBadgeColor(patient.status)}>
-                              {patient.status}
-                            </Badge>
+                            <Badge colorScheme={getBadgeColor(patient.status)}>{patient.status}</Badge>
                           </Td>
                         </Tr>
                       ))}
@@ -165,16 +151,14 @@ export default function Patients() {
                   </Box>
                 </>
               )}
-            </Flex>
+            </Box>
           </>
         )}
       </Flex>
     </>
-  )
+  );
 }
 
-Patients.layout = DashboardLayout
+Patients.layout = DashboardLayout;
 
-export const getServerSideProps = withSSRAuth(async (ctx) => {
-  return { props: {} }
-})
+export const getServerSideProps = withSSRAuth(async () => ({ props: {} }));
