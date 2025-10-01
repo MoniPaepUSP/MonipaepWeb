@@ -1,8 +1,9 @@
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import Head from "next/head"
-import NextLink from "next/link"
-import { debounce } from "ts-debounce"
-
+import Head from "next/head";
+import NextLink from "next/link";
+import { debounce } from "ts-debounce";
+import DashboardLayout from "../../../components/Layouts/DashboardLayout";
+import { Pagination } from "../../../components/Pagination";
 import {
   Badge,
   Box,
@@ -23,85 +24,84 @@ import {
   Select,
   Spinner,
 } from "@chakra-ui/react";
-import { MdSearch } from 'react-icons/md'
-
+import { MdSearch } from "react-icons/md";
 import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { useDiseaseOccurrences } from "../../../hooks/useDiseaseOccurrences";
-import { Pagination } from "../../../components/Pagination";
-import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 
 function getBadgeColor(status: string) {
-  if (status === "Saudável" || status === "Curado") {
-    return "green"
-  } else if (status === "Suspeito") {
-    return "yellow"
-  } else if (status === "Infectado") {
-    return "red"
-  } else {
-    return "purple"
+  switch (status) {
+    case "Saudável":
+    case "Curado":
+      return "green";
+    case "Suspeito":
+      return "yellow";
+    case "Infectado":
+      return "red";
+    default:
+      return "purple";
   }
 }
 
 export default function DiseaseOccurrences() {
-  const [page, setPage] = useState(1)
-  const [filter, setFilter] = useState('patient_name')
-  const [search, setSearch] = useState('')
-  const { data, isLoading, isFetching, error } = useDiseaseOccurrences({ page, filter: [filter, search] })
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState("patient_name");
+  const [search, setSearch] = useState("");
+  const { data, isLoading, isFetching, error } = useDiseaseOccurrences({ page, filter: [filter, search] });
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPage(1)
-    setSearch(event.target.value)
-  }, [])
+    setPage(1);
+    setSearch(event.target.value);
+  }, []);
 
-  const debouncedChangeInputHandler = useMemo(
-    () => debounce(handleChangeInput, 600)
-    , [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput]);
 
   return (
     <>
       <Head>
         <title>MoniPaEp | Ocorrências de doenças</title>
       </Head>
-      <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
-        <Heading ml="8" my="6">
+
+      <Flex direction="column" w="100%" bgColor="white" borderRadius="4">
+        <Heading ml={{ base: 4, md: 8 }} my={6} fontSize={{ base: "xl", md: "3xl" }}>
           Ocorrências de doenças
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
+
         {isLoading ? (
-          <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Spinner size="lg" />
-          </Box>
+          </Flex>
         ) : error ? (
-          <Flex mx="8" mt="2" alignItems="flex-start" justifyContent="flex-start">
+          <Flex mx={{ base: 4, md: 8 }} mt={2} align="flex-start">
             <Text>Erro ao carregar os dados</Text>
           </Flex>
         ) : (
           <>
-            <Flex mx="8" mb="8">
-              <InputGroup w="30">
+            {/* Filtros */}
+            <Flex mx={{ base: 4, md: 8 }} mb={4} flexWrap="wrap" gap={2}>
+              <InputGroup w={{ base: "100%", md: "30%" }}>
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
                 <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
-              <Select w="32" onChange={e => { setFilter(e.target.value) }} ml="2">
+              <Select w={{ base: "100%", md: "32" }} value={filter} onChange={(e) => setFilter(e.target.value)}>
                 <option value="patient_name">Paciente</option>
                 <option value="disease_name">Doença</option>
                 <option value="status">Status</option>
               </Select>
             </Flex>
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
               {data?.totalDiseaseOccurrences === 0 ? (
-                <Text mt="2">
-                  {search === '' ?
-                    'Não existem ocorrências de doença registradas até o momento.' :
-                    'A busca não encontrou nenhuma ocorrência de doença com esse filtro.'
-                  }
+                <Text mt="2" mb="6">
+                  {search === ""
+                    ? "Não existem ocorrências de doença registradas até o momento."
+                    : "A busca não encontrou nenhuma ocorrência de doença com esse filtro."}
                 </Text>
               ) : (
                 <>
-                  <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Paciente</Th>
@@ -111,39 +111,30 @@ export default function DiseaseOccurrences() {
                         <Th>Status</Th>
                       </Tr>
                     </Thead>
-
                     <Tbody>
-                      {data?.diseaseOccurrences.map(diseaseOccurrence => (
-                        <Tr key={diseaseOccurrence.id} _hover={{ bgColor: 'gray.50' }}>
+                      {data?.diseaseOccurrences.map((occurrence) => (
+                        <Tr key={occurrence.id} _hover={{ bgColor: "gray.50" }}>
                           <Td>
                             <NextLink
-                              href={`/dashboard/patients/diseasehistory/${diseaseOccurrence.patientId}/${diseaseOccurrence.id}`}
+                              href={`/dashboard/patients/diseasehistory/${occurrence.patientId}/${occurrence.id}`}
                               passHref
                             >
                               <Link color="blue.500" fontWeight="semibold">
-                                {diseaseOccurrence.patient.name}
+                                {occurrence.patient.name}
                               </Link>
                             </NextLink>
                           </Td>
+                          <Td>{occurrence.diseases.map((d) => d.name).join(", ")}</Td>
+                          <Td>{occurrence.dateStartFormatted}</Td>
                           <Td>
-                            <Text>{diseaseOccurrence.diseases.map(d => d.name).join(', ')}</Text>
-                          </Td>
-                          <Td>
-                            <Text>{diseaseOccurrence.dateStartFormatted}</Text>
-                          </Td>
-                          <Td>
-                            {diseaseOccurrence.dateEndFormatted ? (
-                              <Text>{diseaseOccurrence.dateEndFormatted}</Text>
+                            {occurrence.dateEndFormatted ? (
+                              <Text>{occurrence.dateEndFormatted}</Text>
                             ) : (
-                              <Badge colorScheme="green">
-                                Em andamento
-                              </Badge>
+                              <Badge colorScheme="green">Em andamento</Badge>
                             )}
                           </Td>
                           <Td>
-                            <Badge colorScheme={getBadgeColor(diseaseOccurrence.status)}>
-                              {diseaseOccurrence.status}
-                            </Badge>
+                            <Badge colorScheme={getBadgeColor(occurrence.status)}>{occurrence.status}</Badge>
                           </Td>
                         </Tr>
                       ))}
@@ -159,16 +150,14 @@ export default function DiseaseOccurrences() {
                   </Box>
                 </>
               )}
-            </Flex>
+            </Box>
           </>
         )}
       </Flex>
     </>
-  )
+  );
 }
 
-DiseaseOccurrences.layout = DashboardLayout
+DiseaseOccurrences.layout = DashboardLayout;
 
-export const getServerSideProps = withSSRAuth(async (ctx) => {
-  return { props: {} }
-})
+export const getServerSideProps = withSSRAuth(async () => ({ props: {} }));

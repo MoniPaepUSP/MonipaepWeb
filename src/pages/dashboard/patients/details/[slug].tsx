@@ -25,7 +25,7 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
   } = useDisclosure()
 
   return (
-    <PatientDataWrapper id={patientId} isFetching={isFetching} isLoading={isLoading}>
+    <PatientDataWrapper id={patientId} name={data?.patients[0].name} isFetching={isFetching} isLoading={isLoading}>
       <Head>
         <title>MoniPaEp | Detalhes do paciente</title>
       </Head>
@@ -109,7 +109,7 @@ export default function PatientDetails({ patientId }: PatientDetailsProps) {
                 <Can roles={['general.admin']}>
                   <Button
                     colorScheme="red"
-                    mt="5"
+                    my="5"
                     w="200px"
                     leftIcon={<Icon as={BiTrash} fontSize="22" />}
                     onClick={onOpenExcludeAlert}

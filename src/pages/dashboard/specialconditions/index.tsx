@@ -1,6 +1,6 @@
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import Head from "next/head"
-import { debounce } from "ts-debounce"
+import Head from "next/head";
+import { debounce } from "ts-debounce";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 import {
   Box,
@@ -21,58 +21,46 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { BiPencil, BiTrash } from 'react-icons/bi'
-import { MdSearch } from 'react-icons/md'
-import { RiAddLine } from 'react-icons/ri'
+import { BiPencil, BiTrash } from "react-icons/bi";
+import { MdSearch } from "react-icons/md";
+import { RiAddLine } from "react-icons/ri";
 
 import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { useCan } from "../../../hooks/useCan";
 import { Pagination } from "../../../components/Pagination";
 import { SpecialCondition, useSpecialConditions } from "../../../hooks/useSpecialConditions";
+import { SpecialConditionAddModal } from "../../../components/Modal/SpecialConditionAddModal";
 import { SpecialConditionExcludeAlert } from "../../../components/AlertDialog/SpecialConditionExcludeAlert";
 import { SpecialConditionEditModal } from "../../../components/Modal/SpecialConditionEditModal";
-import { SpecialConditionAddModal } from "../../../components/Modal/SpecialConditionAddModal";
 
 export default function SpecialConditions() {
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [specialConditionToBeEdited, setSpecialConditionToBeEdited] = useState<SpecialCondition | undefined>(undefined)
-  const [specialConditionToBeDeleted, setSpecialConditionToBeDeleted] = useState<SpecialCondition | undefined>(undefined)
-  const isAdmin = useCan({ roles: ["general.admin", "local.admin"] })
-  const { data, isLoading, isFetching, error, refetch } = useSpecialConditions({ page, filter: search })
-  const {
-    isOpen: isOpenEditModal,
-    onOpen: onOpenEditModal,
-    onClose: onCloseEditModal
-  } = useDisclosure()
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [specialConditionToBeEdited, setSpecialConditionToBeEdited] = useState<SpecialCondition | undefined>(undefined);
+  const [specialConditionToBeDeleted, setSpecialConditionToBeDeleted] = useState<SpecialCondition | undefined>(undefined);
 
-  const {
-    isOpen: isOpenExcludeAlert,
-    onOpen: onOpenExcludeAlert,
-    onClose: onCloseExcludeAlert
-  } = useDisclosure()
+  const isAdmin = useCan({ roles: ["general.admin", "local.admin"] });
+  const { data, isLoading, isFetching, error, refetch } = useSpecialConditions({ page, filter: search });
 
-  const {
-    isOpen: isOpenAddModal,
-    onOpen: onOpenAddModal,
-    onClose: onCloseAddModal
-  } = useDisclosure()
+  const { isOpen: isOpenEditModal, onOpen: onOpenEditModal, onClose: onCloseEditModal } = useDisclosure();
+  const { isOpen: isOpenExcludeAlert, onOpen: onOpenExcludeAlert, onClose: onCloseExcludeAlert } = useDisclosure();
+  const { isOpen: isOpenAddModal, onOpen: onOpenAddModal, onClose: onCloseAddModal } = useDisclosure();
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPage(1)
-    setSearch(event.target.value)
-  }, [])
+    setPage(1);
+    setSearch(event.target.value);
+  }, []);
 
-  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput]);
 
   function handleEditSpecialCondition(specialCondition: SpecialCondition) {
-    setSpecialConditionToBeEdited(specialCondition)
-    onOpenEditModal()
+    setSpecialConditionToBeEdited(specialCondition);
+    onOpenEditModal();
   }
 
   function handleDeleteSpecialCondition(specialCondition: SpecialCondition) {
-    setSpecialConditionToBeDeleted(specialCondition)
-    onOpenExcludeAlert()
+    setSpecialConditionToBeDeleted(specialCondition);
+    onOpenExcludeAlert();
   }
 
   return (
@@ -81,26 +69,23 @@ export default function SpecialConditions() {
         <title>MoniPaEp | Condições Especiais</title>
       </Head>
 
-      <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
-        <Heading ml="8" my="6">
+      <Flex direction="column" w="100%" bgColor="white" borderRadius="4">
+        <Heading ml={{ base: 4, md: 8 }} my={6} fontSize={{ base: "xl", md: "3xl" }}>
           Condições Especiais
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
+
         {isLoading ? (
-          <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Spinner size="lg" />
-          </Box>
+          </Flex>
         ) : error ? (
-          <Box w="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" justify="center" align="center">
             <Text>Erro ao carregar os dados</Text>
-          </Box>
+          </Flex>
         ) : (
           <>
-            <SpecialConditionAddModal
-              isOpen={isOpenAddModal}
-              onClose={onCloseAddModal}
-              refetchList={refetch}
-            />
+            <SpecialConditionAddModal isOpen={isOpenAddModal} onClose={onCloseAddModal} refetchList={refetch} />
 
             {specialConditionToBeEdited && (
               <SpecialConditionEditModal
@@ -120,15 +105,26 @@ export default function SpecialConditions() {
               />
             )}
 
-            <Flex mx="8" mb="8" justifyContent="space-between" alignItems="center">
-              <InputGroup w="30">
+            {/* Barra de pesquisa + botão */}
+            <Flex
+              mx={{ base: 4, md: 8 }}
+              mb={{ base: 4, md: 8 }}
+              direction={{ base: "column", md: "row" }}
+              gap={{ base: 2, md: 0 }}
+              justify="space-between"
+              align={{ base: "stretch", md: "center" }}
+            >
+              <InputGroup w={{ base: "100%", md: "30%" }}>
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
                 <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
+
               {isAdmin && (
                 <Button
+                  mt={{ base: 2, md: 0 }}
+                  w={{ base: "100%", md: "auto" }}
                   size="sm"
                   fontSize="sm"
                   colorScheme="blue"
@@ -140,17 +136,16 @@ export default function SpecialConditions() {
               )}
             </Flex>
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
               {data?.totalSpecialConditions === 0 ? (
-                <Text mt="2 ">
-                  {search === '' ?
-                    'Não existem condições especiais registradas até o momento.' :
-                    'A busca não encontrou nenhuma condição especial com esse nome.'
-                  }
+                <Text mt="2" mb="6">
+                  {search === ""
+                    ? "Não existem condições especiais registradas até o momento."
+                    : "A busca não encontrou nenhuma condição especial com esse nome."}
                 </Text>
               ) : (
                 <>
-                  <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Condição especial</Th>
@@ -160,21 +155,26 @@ export default function SpecialConditions() {
                     </Thead>
 
                     <Tbody>
-                      {data?.specialConditions.map(specialCondition => (
-                        <Tr key={specialCondition.id} _hover={{ bgColor: 'gray.50' }}>
-                          <Td w="20%">
+                      {data?.specialConditions.map((specialCondition) => (
+                        <Tr key={specialCondition.id} _hover={{ bgColor: "gray.50" }}>
+                          <Td minW="120px">
                             <Text>{specialCondition.name}</Text>
                           </Td>
-                          <Td w="80%">
+                          <Td minW="200px">
                             <Text>{specialCondition.description}</Text>
                           </Td>
                           {isAdmin && (
-                            <Td pr="4">
-                              <Flex justifyContent="flex-end" alignItems="center">
+                            <Td>
+                              <Flex
+                                direction={{ base: "column", md: "row" }}
+                                align={{ base: "stretch", md: "center" }}
+                                gap={2}
+                                justify="flex-end"
+                              >
                                 <Button
                                   fontSize="lg"
-                                  height="36px"
-                                  width="36px"
+                                  h="36px"
+                                  w="36px"
                                   colorScheme="blue"
                                   onClick={() => handleEditSpecialCondition(specialCondition)}
                                 >
@@ -182,9 +182,8 @@ export default function SpecialConditions() {
                                 </Button>
                                 <Button
                                   fontSize="lg"
-                                  height="36px"
-                                  ml="2"
-                                  width="36px"
+                                  h="36px"
+                                  w="36px"
                                   colorScheme="red"
                                   onClick={() => handleDeleteSpecialCondition(specialCondition)}
                                 >
@@ -207,16 +206,16 @@ export default function SpecialConditions() {
                   </Box>
                 </>
               )}
-            </Flex>
+            </Box>
           </>
         )}
       </Flex>
     </>
-  )
+  );
 }
 
-SpecialConditions.layout = DashboardLayout
+SpecialConditions.layout = DashboardLayout;
 
 export const getServerSideProps = withSSRAuth(async (ctx) => {
-  return { props: {} }
-})
+  return { props: {} };
+});

@@ -1,6 +1,6 @@
 import { useState, useCallback, ChangeEvent, useMemo } from "react";
-import Head from "next/head"
-import { debounce } from "ts-debounce"
+import Head from "next/head";
+import { debounce } from "ts-debounce";
 import DashboardLayout from "../../../components/Layouts/DashboardLayout";
 import {
   Box,
@@ -21,9 +21,9 @@ import {
   Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
-import { BiPencil, BiTrash } from 'react-icons/bi'
-import { MdSearch } from 'react-icons/md'
-import { RiAddLine } from 'react-icons/ri'
+import { BiPencil, BiTrash } from "react-icons/bi";
+import { MdSearch } from "react-icons/md";
+import { RiAddLine } from "react-icons/ri";
 
 import { withSSRAuth } from "../../../utils/withSSRAuth";
 import { useCan } from "../../../hooks/useCan";
@@ -34,45 +34,33 @@ import { ComorbidityExcludeAlert } from "../../../components/AlertDialog/Comorbi
 import { ComorbidityEditModal } from "../../../components/Modal/ComorbidityEditModal";
 
 export default function Comorbidities() {
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [comorbidityToBeEdited, setComorbidityToBeEdited] = useState<Comorbidity | undefined>(undefined)
-  const [comorbidityToBeDeleted, setComorbidityToBeDeleted] = useState<Comorbidity | undefined>(undefined)
-  const isAdmin = useCan({ roles: ["general.admin", "local.admin"] })
-  const { data, isLoading, isFetching, error, refetch } = useComorbidities({ page, filter: search })
-  const {
-    isOpen: isOpenEditModal,
-    onOpen: onOpenEditModal,
-    onClose: onCloseEditModal
-  } = useDisclosure()
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [comorbidityToBeEdited, setComorbidityToBeEdited] = useState<Comorbidity | undefined>(undefined);
+  const [comorbidityToBeDeleted, setComorbidityToBeDeleted] = useState<Comorbidity | undefined>(undefined);
 
-  const {
-    isOpen: isOpenExcludeAlert,
-    onOpen: onOpenExcludeAlert,
-    onClose: onCloseExcludeAlert
-  } = useDisclosure()
+  const isAdmin = useCan({ roles: ["general.admin", "local.admin"] });
+  const { data, isLoading, isFetching, error, refetch } = useComorbidities({ page, filter: search });
 
-  const {
-    isOpen: isOpenAddModal,
-    onOpen: onOpenAddModal,
-    onClose: onCloseAddModal
-  } = useDisclosure()
+  const { isOpen: isOpenEditModal, onOpen: onOpenEditModal, onClose: onCloseEditModal } = useDisclosure();
+  const { isOpen: isOpenExcludeAlert, onOpen: onOpenExcludeAlert, onClose: onCloseExcludeAlert } = useDisclosure();
+  const { isOpen: isOpenAddModal, onOpen: onOpenAddModal, onClose: onCloseAddModal } = useDisclosure();
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPage(1)
-    setSearch(event.target.value)
-  }, [])
+    setPage(1);
+    setSearch(event.target.value);
+  }, []);
 
-  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput])
+  const debouncedChangeInputHandler = useMemo(() => debounce(handleChangeInput, 600), [handleChangeInput]);
 
   function handleEditComorbidity(comorbidity: Comorbidity) {
-    setComorbidityToBeEdited(comorbidity)
-    onOpenEditModal()
+    setComorbidityToBeEdited(comorbidity);
+    onOpenEditModal();
   }
 
   function handleDeleteComorbidity(comorbidity: Comorbidity) {
-    setComorbidityToBeDeleted(comorbidity)
-    onOpenExcludeAlert()
+    setComorbidityToBeDeleted(comorbidity);
+    onOpenExcludeAlert();
   }
 
   return (
@@ -81,26 +69,23 @@ export default function Comorbidities() {
         <title>MoniPaEp | Comorbidades</title>
       </Head>
 
-      <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column" >
-        <Heading ml="8" my="6">
+      <Flex direction="column" w="100%" bgColor="white" borderRadius="4">
+        <Heading ml={{ base: 4, md: 8 }} my={6} fontSize={{ base: "xl", md: "3xl" }}>
           Comorbidades
           {!isLoading && isFetching && <Spinner ml="4" />}
         </Heading>
+
         {isLoading ? (
-          <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" h="100%" justify="center" align="center">
             <Spinner size="lg" />
-          </Box>
+          </Flex>
         ) : error ? (
-          <Box w="100%" display="flex" justifyContent="center" alignItems="center">
+          <Flex w="100%" justify="center" align="center">
             <Text>Erro ao carregar os dados</Text>
-          </Box>
+          </Flex>
         ) : (
           <>
-            <ComorbidityAddModal
-              isOpen={isOpenAddModal}
-              onClose={onCloseAddModal}
-              refetchList={refetch}
-            />
+            <ComorbidityAddModal isOpen={isOpenAddModal} onClose={onCloseAddModal} refetchList={refetch} />
 
             {comorbidityToBeEdited && (
               <ComorbidityEditModal
@@ -120,15 +105,26 @@ export default function Comorbidities() {
               />
             )}
 
-            <Flex mx="8" mb="8" justifyContent="space-between" alignItems="center">
-              <InputGroup w="30">
+            {/* Barra de pesquisa + botão */}
+            <Flex
+              mx={{ base: 4, md: 8 }}
+              mb={{ base: 4, md: 8 }}
+              direction={{ base: "column", md: "row" }}
+              gap={{ base: 2, md: 0 }}
+              justify="space-between"
+              align={{ base: "stretch", md: "center" }}
+            >
+              <InputGroup w={{ base: "100%", md: "30%" }}>
                 <InputLeftElement>
                   <Icon as={MdSearch} fontSize="xl" color="gray.400" />
                 </InputLeftElement>
                 <Input placeholder="Filtrar..." onChange={debouncedChangeInputHandler} />
               </InputGroup>
+
               {isAdmin && (
                 <Button
+                  mt={{ base: 2, md: 0 }}
+                  w={{ base: "100%", md: "auto" }}
                   size="sm"
                   fontSize="sm"
                   colorScheme="blue"
@@ -140,17 +136,16 @@ export default function Comorbidities() {
               )}
             </Flex>
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
               {data?.totalComorbidities === 0 ? (
-                <Text mt="2 ">
-                  {search === '' ?
-                    'Não existem comorbidades registradas até o momento.' :
-                    'A busca não encontrou nenhuma comorbidade com esse nome.'
-                  }
+                <Text mt="2" mb="6">
+                  {search === ""
+                    ? "Não existem comorbidades registradas até o momento."
+                    : "A busca não encontrou nenhuma comorbidade com esse nome."}
                 </Text>
               ) : (
                 <>
-                  <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
                     <Thead bgColor="gray.200">
                       <Tr>
                         <Th>Comorbidade</Th>
@@ -160,21 +155,26 @@ export default function Comorbidities() {
                     </Thead>
 
                     <Tbody>
-                      {data?.comorbidities.map(comorbidity => (
-                        <Tr key={comorbidity.id} _hover={{ bgColor: 'gray.50' }}>
-                          <Td w="20%">
+                      {data?.comorbidities.map((comorbidity) => (
+                        <Tr key={comorbidity.id} _hover={{ bgColor: "gray.50" }}>
+                          <Td minW="120px">
                             <Text>{comorbidity.name}</Text>
                           </Td>
-                          <Td w="80%">
+                          <Td minW="200px">
                             <Text>{comorbidity.description}</Text>
                           </Td>
                           {isAdmin && (
-                            <Td pr="4">
-                              <Flex justifyContent="flex-end" alignItems="center">
+                            <Td>
+                              <Flex
+                                direction={{ base: "column", md: "row" }}
+                                align={{ base: "stretch", md: "center" }}
+                                gap={2}
+                                justify="flex-end"
+                              >
                                 <Button
                                   fontSize="lg"
-                                  height="36px"
-                                  width="36px"
+                                  h="36px"
+                                  w="36px"
                                   colorScheme="blue"
                                   onClick={() => handleEditComorbidity(comorbidity)}
                                 >
@@ -182,9 +182,8 @@ export default function Comorbidities() {
                                 </Button>
                                 <Button
                                   fontSize="lg"
-                                  height="36px"
-                                  ml="2"
-                                  width="36px"
+                                  h="36px"
+                                  w="36px"
                                   colorScheme="red"
                                   onClick={() => handleDeleteComorbidity(comorbidity)}
                                 >
@@ -207,16 +206,16 @@ export default function Comorbidities() {
                   </Box>
                 </>
               )}
-            </Flex>
+            </Box>
           </>
         )}
       </Flex>
     </>
-  )
+  );
 }
 
-Comorbidities.layout = DashboardLayout
+Comorbidities.layout = DashboardLayout;
 
 export const getServerSideProps = withSSRAuth(async (ctx) => {
-  return { props: {} }
-})
+  return { props: {} };
+});

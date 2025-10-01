@@ -1,17 +1,40 @@
-import { Box, Flex, Heading, Icon } from "@chakra-ui/react";
-
-import { AiOutlineDatabase } from "react-icons/ai"
-import { BiArchive, BiBookHeart, BiClinic, BiHealth, BiHeart } from "react-icons/bi"
-import { FiUsers } from "react-icons/fi"
-import { RiQuestionAnswerLine, RiHealthBookLine, RiMentalHealthFill } from "react-icons/ri"
-import { HiOutlineClipboardList } from "react-icons/hi"
+import {
+  Box,
+  Flex,
+  Heading,
+  Icon,
+} from "@chakra-ui/react";
+import { AiOutlineDatabase } from "react-icons/ai";
+import {
+  BiArchive,
+  BiBookHeart,
+  BiClinic,
+  BiHealth,
+} from "react-icons/bi";
+import { FiUsers } from "react-icons/fi";
+import {
+  RiQuestionAnswerLine,
+  RiHealthBookLine,
+  RiMentalHealthFill,
+} from "react-icons/ri";
+import { HiOutlineClipboardList } from "react-icons/hi";
 
 import { Can } from "../Can";
 import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
 import { AccountSection } from "./AccountSection";
 
-export function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+  isMobile?: boolean;
+}
+
+export function Sidebar({ onNavigate, isMobile }: SidebarProps) {
+  if (isMobile) {
+    // versão mobile: sem container fixo, só conteúdo
+    return <SidebarContent onClose={onNavigate} />;
+  }
+
   return (
     <Box
       as="aside"
@@ -25,11 +48,28 @@ export function Sidebar() {
       justifyContent="flex-start"
       alignItems="center"
       boxShadow="base"
-      position="fixed"
-      left="auto"
+      position="relative"
     >
-      <Flex align="center" my="5">
-        <Icon as={BiBookHeart} color="custom.blue-logo" height="30px" width="30px" mr="2" />
+      <SidebarContent onClose={onNavigate} />
+    </Box>
+  );
+}
+
+function SidebarContent({ onClose }: { onClose?: () => void }) {
+  return (
+    <>
+      <Flex
+        align="center"
+        my="5"
+        px="4"
+        onClick={onClose} cursor="pointer">
+        <Icon
+          as={BiBookHeart}
+          color="custom.blue-logo"
+          height="30px"
+          width="30px"
+          mr="2"
+        />
         <Heading
           color="custom.blue-logo"
           fontSize="3xl"
@@ -51,7 +91,6 @@ export function Sidebar() {
         <NavLink href="/dashboard/symptomoccurrences" icon={HiOutlineClipboardList}>
           Ocorrências de sintomas
         </NavLink>
-
       </NavSection>
       <NavSection title="GERENCIAMENTO">
         <NavLink href="/dashboard/faqs" icon={RiQuestionAnswerLine}>
@@ -83,6 +122,6 @@ export function Sidebar() {
       </Can>
 
       <AccountSection />
-    </Box>
-  )
+    </>
+  );
 }

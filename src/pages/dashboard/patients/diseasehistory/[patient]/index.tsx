@@ -29,6 +29,7 @@ import { Pagination } from "../../../../../components/Pagination";
 import DashboardLayout from "../../../../../components/Layouts/DashboardLayout";
 import { usePatientDiseaseHistory } from "../../../../../hooks/usePatientDiseaseHistory";
 import { PatientDataWrapper } from "../../../../../components/Layouts/PatientDataWrapper";
+import { usePatientDetails } from "../../../../../hooks/usePatientDetails";
 
 interface PatientDiseaseHistoryProps {
   patientId: string;
@@ -51,6 +52,7 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
   const [filter, setFilter] = useState('diseaseName')
   const [search, setSearch] = useState('')
   const { data, isLoading, isFetching, error } = usePatientDiseaseHistory({ page, patientId, filter: [filter, search] })
+  const { data: patientData } = usePatientDetails({ patientId })
 
   const handleChangeInput = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setPage(1)
@@ -62,7 +64,7 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
     , [handleChangeInput])
 
   return (
-    <PatientDataWrapper id={patientId} isFetching={isFetching} isLoading={isLoading}>
+    <PatientDataWrapper id={patientId} name={patientData?.patients[0].name} isFetching={isFetching} isLoading={isLoading}>
       <Head>
         <title>MoniPaEp | Histórico de doenças</title>
       </Head>
@@ -92,7 +94,7 @@ export default function PatientDiseaseHistory({ patientId }: PatientDiseaseHisto
               </Flex>
             )}
 
-            <Flex direction="column" w="100%" overflow="auto" px="8">
+            <Flex direction="column" w="100%" overflow="auto" px="8" pb="8">
               {data?.totalDiseaseOccurrences === 0 ? (
                 <Text>
                   {search === '' ?
