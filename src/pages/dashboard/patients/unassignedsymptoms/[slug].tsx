@@ -60,6 +60,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
   const toast = useToast();
 
   useEffect(() => {
+    console.log(data);
     if (data && data.length > 0) {
       setStartDate(new Date(data[data.length - 1].registeredDate));
     }
@@ -126,7 +127,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
 
       {isLoading ? (
         <Flex w="100%" h="100%" justify="center" align="center">
-          <Spinner size="lg" mt="10" />
+          <Spinner size="lg" my="10" />
         </Flex>
       ) : error ? (
         <Flex w="100%" justify="center" align="center">
@@ -143,7 +144,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
         >
           {/* Histórico de sintomas */}
           <Flex direction="column" w={{ base: "100%", md: "48%" }}>
-            <Flex align="center" mb="4">
+            <Flex align="center" my="4">
               <Icon
                 as={IoChevronBack}
                 fontSize={{ base: "20px", md: "22px" }}
@@ -151,7 +152,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                 _hover={{ cursor: "pointer" }}
                 onClick={() => Router.back()}
               />
-              <Text fontSize={{ base: "sm", md: "lg" }} fontWeight="semibold">
+              <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="semibold">
                 Histórico de sintomas do paciente
               </Text>
             </Flex>
@@ -214,7 +215,7 @@ export default function UnassignedSymptoms({ patientId }: UnassignedSymptomsProp
                       locale="ptBR"
                       selected={startDate}
                       onChange={handleChangeDate}
-                      minDate={data ? new Date(data[data.length - 1].registeredDate) : startDate}
+                      minDate={data ? new Date(data[data.length - 1]?.registeredDate) : startDate}
                       showTimeSelect
                       timeFormat="p"
                       timeIntervals={15}

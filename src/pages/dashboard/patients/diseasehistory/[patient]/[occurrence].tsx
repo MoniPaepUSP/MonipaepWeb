@@ -28,7 +28,6 @@ import DashboardLayout from "../../../../../components/Layouts/DashboardLayout";
 import { PatientDataWrapper } from "../../../../../components/Layouts/PatientDataWrapper";
 import { DiseaseOccurrenceExcludeAlert } from "../../../../../components/AlertDialog/DiseaseOccurrenceExcludeAlert";
 import { DiseaseOccurrenceEditModal } from "../../../../../components/Modal/DiseaseOccurrenceEditModal";
-import { DiseaseOccurrence } from "../../../../../hooks/useDiseaseOccurrences";
 
 interface PatientDiseaseOccurrenceProps {
   patientId: string;
@@ -65,7 +64,7 @@ export default function PatientDiseaseOccurrence({ patientId, occurrenceId }: Pa
       <Flex h="100%" w="100%" bgColor="white" borderRadius="4" direction="column">
         {isLoading ? (
           <Box w="100%" h="100%" display="flex" justifyContent="center" alignItems="center">
-            <Spinner size="lg" mt="10" />
+            <Spinner size="lg" my="10" />
           </Box>
         ) : error ? (
           <Flex mx="8" mt="8" alignItems="flex-start" justifyContent="flex-start">
@@ -87,61 +86,77 @@ export default function PatientDiseaseOccurrence({ patientId, occurrenceId }: Pa
                 refetchData={refetch}
               />
             )}
-            <Flex w="100%" pl="5" pr="8" justifyContent="space-between">
+            <Flex
+              w="100%"
+              px={{ base: 4, md: 8 }}
+              direction={{ base: "column", md: "row" }}
+              justifyContent="space-between"
+            >
               {data?.symptomOccurrences.length === 0 ? (
-                <Text mt="9" ml="3">
+                <Text my="6">
                   Não existem ocorrências de sintomas registrados para essa ocorrência de doença.
                 </Text>
               ) : (
                 <>
-                  <Flex maxW="26%" w="100%">
+                  {/* Coluna esquerda */}
+                  <Flex
+                    w={{ base: "100%", md: "30%" }}
+                    direction="column"
+                    mb={{ base: 6, md: 0 }}
+                  >
                     <Icon
                       as={IoChevronBack}
                       fontSize="22px"
-                      mt="9"
-                      mr="6"
+                      mt="4"
+                      mb="2"
                       _hover={{ cursor: 'pointer' }}
                       onClick={() => Router.back()}
                     />
-                    <Flex direction="column">
-                      <Text w="100%" mt="8" mb="5" fontWeight="semibold" fontSize="lg">
-                        Detalhes da ocorrência de doença
-                      </Text>
-                      <VStack w="100%" alignItems="flex-start">
-                        <Text mr="3"><b>Doenças suspeitas:</b> {data?.diseaseOccurrence.diseases.map(d => d.name).join(', ')}</Text>
-                        <Text mr="3"><b>Data de início:</b> {data?.diseaseOccurrence.dateStartFormatted}</Text>
-                        <Text mr="3"><b>Data de término:</b> {data?.diseaseOccurrence.dateEndFormatted ?? 'Em andamento'}</Text>
-                        <Text mr="3"><b>Diagnóstico:</b> {data?.diseaseOccurrence.diagnosis}</Text>
-                        <Text mr="3"><b>Status:</b> {data?.diseaseOccurrence.status}</Text>
-                      </VStack>
-                      <HStack w="100%" mt="5" spacing="2">
-                        <Button
-                          colorScheme="blue"
-                          flex="1"
-                          leftIcon={<Icon as={BiPencil} fontSize="20" />}
-                          onClick={onOpenEditModal}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          colorScheme="red"
-                          flex="1"
-                          leftIcon={<Icon as={BiTrash} fontSize="20" />}
-                          onClick={onOpenExcludeAlert}
-                        >
-                          Excluir
-                        </Button>
-                      </HStack>
-                    </Flex>
+                    <Text w="100%" mb="4" fontWeight="semibold" fontSize="lg">
+                      Detalhes da ocorrência de doença
+                    </Text>
+                    <VStack w="100%" alignItems="flex-start" spacing={2}>
+                      <Text><b>Doenças suspeitas:</b> {data?.diseaseOccurrence.diseases.map(d => d.name).join(', ')}</Text>
+                      <Text><b>Data de início:</b> {data?.diseaseOccurrence.dateStartFormatted}</Text>
+                      <Text><b>Data de término:</b> {data?.diseaseOccurrence.dateEndFormatted ?? 'Em andamento'}</Text>
+                      <Text><b>Diagnóstico:</b> {data?.diseaseOccurrence.diagnosis}</Text>
+                      <Text><b>Status:</b> {data?.diseaseOccurrence.status}</Text>
+                    </VStack>
+                    <HStack w="100%" mt="5" spacing="2">
+                      <Button
+                        colorScheme="blue"
+                        flex="1"
+                        leftIcon={<Icon as={BiPencil} fontSize="20" />}
+                        onClick={onOpenEditModal}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        colorScheme="red"
+                        flex="1"
+                        leftIcon={<Icon as={BiTrash} fontSize="20" />}
+                        onClick={onOpenExcludeAlert}
+                      >
+                        Excluir
+                      </Button>
+                    </HStack>
                   </Flex>
-                  <Box mt="4" minH="calc(100vh - 156px)">
+
+                  {/* Divider só no desktop */}
+                  <Box
+                    display={{ base: "none", md: "block" }}
+                    mt="4"
+                    minH="calc(100vh - 156px)"
+                  >
                     <Divider orientation="vertical" mx="6" size="100%" />
                   </Box>
-                  <Box maxW="60%" w="100%">
-                    <Text fontSize="lg" mb="5" mt="8" fontWeight="semibold">
+
+                  {/* Coluna direita */}
+                  <Box w={{ base: "100%", md: "65%" }} mb={{ base: 6, md: 0 }}>
+                    <Text fontSize="lg" mb="5" mt={{ base: 2, md: 8 }} fontWeight="semibold">
                       Histórico de sintomas da ocorrência
                     </Text>
-                    <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md">
+                    <Table w="100%" border="1px" borderColor="gray.200" boxShadow="md" size="sm">
                       <Thead bgColor="gray.200">
                         <Tr>
                           <Th>Sintomas</Th>
@@ -157,9 +172,6 @@ export default function PatientDiseaseOccurrence({ patientId, occurrenceId }: Pa
                         ))}
                       </Tbody>
                     </Table>
-                  </Box>
-                  <Box mt="4" minH="calc(100vh - 156px)">
-                    <Divider orientation="vertical" mx="6" size="100%" />
                   </Box>
                 </>
               )}

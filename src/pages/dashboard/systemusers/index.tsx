@@ -75,7 +75,7 @@ export default function SystemUsers() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex w="100%" justify="center" align="center">
@@ -106,67 +106,69 @@ export default function SystemUsers() {
               </InputGroup>
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalSystemUsers === 0 ? (
                 <Text mt="2" mb="6">
                   {search === "" ? "Não existem usuários registrados até o momento." : "A busca não encontrou nenhum usuário com esse nome."}
                 </Text>
               ) : (
-                <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                  <Thead bgColor="gray.200">
-                    <Tr>
-                      <Th>Nome</Th>
-                      <Th>Setor</Th>
-                      <Th>Autorizado</Th>
-                      <Th>Administrador local</Th>
-                      <Th>Administrador geral</Th>
-                      <Th minW="80px"></Th>
-                    </Tr>
-                  </Thead>
-
-                  <Tbody>
-                    {data?.systemUsers.map((systemUser) => (
-                      <Tr key={systemUser.user.id} _hover={{ bgColor: "gray.50" }}>
-                        <Td>
-                          <Box textAlign="left">
-                            <Text>{systemUser.user.name}</Text>
-                            <Text fontSize="sm" color="gray.500">{systemUser.user.email}</Text>
-                          </Box>
-                        </Td>
-                        <Td>
-                          <Badge colorScheme={systemUser.user.department === "USM" ? "purple" : "orange"}>
-                            {systemUser.user.department === "USM" ? "Unidade de Saúde" : "Vigilância em Saúde"}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Badge colorScheme={systemUser.authorized ? "green" : "red"}>
-                            {systemUser.authorized ? "Sim" : "Não"}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Badge colorScheme={systemUser.localAdm ? "green" : "red"}>
-                            {systemUser.localAdm ? "Sim" : "Não"}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Badge colorScheme={systemUser.generalAdm ? "green" : "red"}>
-                            {systemUser.generalAdm ? "Sim" : "Não"}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Flex direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }} gap={2} justify="flex-end">
-                            <Button fontSize="lg" h="36px" w="36px" colorScheme="blue" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleEditUser(systemUser)}>
-                              <Icon as={BiPencil} />
-                            </Button>
-                            <Button fontSize="lg" h="36px" w="36px" colorScheme="red" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleDeleteUser(systemUser)}>
-                              <Icon as={BiTrash} />
-                            </Button>
-                          </Flex>
-                        </Td>
+                <Box overflowX="auto">
+                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                    <Thead bgColor="gray.200">
+                      <Tr>
+                        <Th>Nome</Th>
+                        <Th>Setor</Th>
+                        <Th>Autorizado</Th>
+                        <Th>Administrador local</Th>
+                        <Th>Administrador geral</Th>
+                        <Th minW="80px"></Th>
                       </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
+                    </Thead>
+
+                    <Tbody>
+                      {data?.systemUsers.map((systemUser) => (
+                        <Tr key={systemUser.user.id} _hover={{ bgColor: "gray.50" }}>
+                          <Td>
+                            <Box textAlign="left">
+                              <Text>{systemUser.user.name}</Text>
+                              <Text fontSize="sm" color="gray.500">{systemUser.user.email}</Text>
+                            </Box>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={systemUser.user.department === "USM" ? "purple" : "orange"}>
+                              {systemUser.user.department === "USM" ? "Unidade de Saúde" : "Vigilância em Saúde"}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={systemUser.authorized ? "green" : "red"}>
+                              {systemUser.authorized ? "Sim" : "Não"}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={systemUser.localAdm ? "green" : "red"}>
+                              {systemUser.localAdm ? "Sim" : "Não"}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme={systemUser.generalAdm ? "green" : "red"}>
+                              {systemUser.generalAdm ? "Sim" : "Não"}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <Flex direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }} gap={2} justify="flex-end">
+                              <Button fontSize="lg" h="36px" w="36px" colorScheme="blue" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleEditUser(systemUser)}>
+                                <Icon as={BiPencil} />
+                              </Button>
+                              <Button fontSize="lg" h="36px" w="36px" colorScheme="red" disabled={systemUser.generalAdm && !isGeneralAdm} onClick={() => handleDeleteUser(systemUser)}>
+                                <Icon as={BiTrash} />
+                              </Button>
+                            </Flex>
+                          </Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </Box>
               )}
 
               <Box w="100%" mt="3" mb="5">

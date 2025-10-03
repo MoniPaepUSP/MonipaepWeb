@@ -68,7 +68,7 @@ export default function Patients() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex mx={{ base: 4, md: 8 }} mt={2} align="flex-start">
@@ -93,7 +93,7 @@ export default function Patients() {
               </Select>
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalPatients === 0 ? (
                 <Text mt="2" mb="6">
                   {search === ""
@@ -102,45 +102,47 @@ export default function Patients() {
                 </Text>
               ) : (
                 <>
-                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Nome</Th>
-                        <Th>Gênero</Th>
-                        <Th>CPF</Th>
-                        <Th>Data de nascimento</Th>
-                        <Th>Bairro residencial</Th>
-                        <Th>Plano de saúde</Th>
-                        <Th>Status</Th>
-                      </Tr>
-                    </Thead>
-
-                    <Tbody>
-                      {data?.patients.map((patient) => (
-                        <Tr key={patient.id} _hover={{ bgColor: "gray.50" }}>
-                          <Td>
-                            <NextLink href={`/dashboard/patients/details/${patient.id}`} passHref>
-                              <Link color="blue.500" fontWeight="semibold">
-                                {patient.name}
-                              </Link>
-                            </NextLink>
-                          </Td>
-                          <Td>{patient.gender}</Td>
-                          <Td>{patient.cpf}</Td>
-                          <Td>{patient.birthdate}</Td>
-                          <Td>{patient.neighborhood}</Td>
-                          <Td>
-                            <Badge colorScheme={patient.hasHealthPlan ? "green" : "red"}>
-                              {patient.hasHealthPlan ? "Possui" : "Não possui"}
-                            </Badge>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={getBadgeColor(patient.status)}>{patient.status}</Badge>
-                          </Td>
+                  <Box overflowX="auto">
+                    <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                      <Thead bgColor="gray.200">
+                        <Tr>
+                          <Th>Nome</Th>
+                          <Th>Gênero</Th>
+                          <Th>CPF</Th>
+                          <Th>Data de nascimento</Th>
+                          <Th>Bairro residencial</Th>
+                          <Th>Plano de saúde</Th>
+                          <Th>Status</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+
+                      <Tbody>
+                        {data?.patients.map((patient) => (
+                          <Tr key={patient.id} _hover={{ bgColor: "gray.50" }}>
+                            <Td>
+                              <NextLink href={`/dashboard/patients/details/${patient.id}`} passHref>
+                                <Link color="blue.500" fontWeight="semibold">
+                                  {patient.name}
+                                </Link>
+                              </NextLink>
+                            </Td>
+                            <Td>{patient.gender}</Td>
+                            <Td>{patient.cpf}</Td>
+                            <Td>{patient.birthdate}</Td>
+                            <Td>{patient.neighborhood}</Td>
+                            <Td>
+                              <Badge colorScheme={patient.hasHealthPlan ? "green" : "red"}>
+                                {patient.hasHealthPlan ? "Possui" : "Não possui"}
+                              </Badge>
+                            </Td>
+                            <Td>
+                              <Badge colorScheme={getBadgeColor(patient.status)}>{patient.status}</Badge>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
 
                   <Box w="100%" mt="3" mb="5">
                     <Pagination

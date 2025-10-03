@@ -77,7 +77,7 @@ export default function Usms() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex w="100%" justify="center" align="center">
@@ -131,7 +131,7 @@ export default function Usms() {
               )}
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalUsms === 0 ? (
                 <Text mt="2" mb="6">
                   {search === ""
@@ -140,46 +140,48 @@ export default function Usms() {
                 </Text>
               ) : (
                 <>
-                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Nome da unidade</Th>
-                        <Th>Endereço</Th>
-                        {isAdmin && <Th minW="80px"></Th>}
-                      </Tr>
-                    </Thead>
-
-                    <Tbody>
-                      {data?.usms.map((usm) => (
-                        <Tr key={usm.id} _hover={{ bgColor: "gray.50" }}>
-                          <Td minW="120px">{usm.name}</Td>
-                          <Td minW="200px">
-                            <Text>
-                              {[usm.street, usm.number ? usm.number : "s/n"].filter(Boolean).join(", ")}
-                              {` - ${usm.neighborhood}, ${usm.city} - ${usm.state}`}
-                            </Text>
-                          </Td>
-                          {isAdmin && (
-                            <Td>
-                              <Flex
-                                direction={{ base: "column", md: "row" }}
-                                align={{ base: "stretch", md: "center" }}
-                                gap={2}
-                                justify="flex-end"
-                              >
-                                <Button fontSize="lg" h="36px" w="36px" colorScheme="blue" onClick={() => handleEditUsm(usm)}>
-                                  <Icon as={BiPencil} />
-                                </Button>
-                                <Button fontSize="lg" h="36px" w="36px" colorScheme="red" onClick={() => handleDeleteUsm(usm)}>
-                                  <Icon as={BiTrash} />
-                                </Button>
-                              </Flex>
-                            </Td>
-                          )}
+                  <Box overflowX="auto">
+                    <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                      <Thead bgColor="gray.200">
+                        <Tr>
+                          <Th>Nome da unidade</Th>
+                          <Th>Endereço</Th>
+                          {isAdmin && <Th minW="80px"></Th>}
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+
+                      <Tbody>
+                        {data?.usms.map((usm) => (
+                          <Tr key={usm.id} _hover={{ bgColor: "gray.50" }}>
+                            <Td minW="120px">{usm.name}</Td>
+                            <Td minW="200px">
+                              <Text>
+                                {[usm.street, usm.number ? usm.number : "s/n"].filter(Boolean).join(", ")}
+                                {` - ${usm.neighborhood}, ${usm.city} - ${usm.state}`}
+                              </Text>
+                            </Td>
+                            {isAdmin && (
+                              <Td>
+                                <Flex
+                                  direction={{ base: "column", md: "row" }}
+                                  align={{ base: "stretch", md: "center" }}
+                                  gap={2}
+                                  justify="flex-end"
+                                >
+                                  <Button fontSize="lg" h="36px" w="36px" colorScheme="blue" onClick={() => handleEditUsm(usm)}>
+                                    <Icon as={BiPencil} />
+                                  </Button>
+                                  <Button fontSize="lg" h="36px" w="36px" colorScheme="red" onClick={() => handleDeleteUsm(usm)}>
+                                    <Icon as={BiTrash} />
+                                  </Button>
+                                </Flex>
+                              </Td>
+                            )}
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
 
                   <Box w="100%" mt="3" mb="5">
                     <Pagination currentPage={page} totalRegisters={data?.totalUsms} onPageChange={setPage} />
