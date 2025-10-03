@@ -29,8 +29,8 @@ export function PatientDataWrapper({ children, id, name, isFetching, isLoading }
         py={2}
         css={{
           "&::-webkit-scrollbar": { display: "none" },
-          "-ms-overflow-style": "none",
-          "scrollbar-width": "none",
+          "MsOverflowStyle": "none",
+          "scrollbarWidth": "none",
         }}
       >
         <TabNavLink href={`/dashboard/patients/details/${id}`} dynamicRoute>

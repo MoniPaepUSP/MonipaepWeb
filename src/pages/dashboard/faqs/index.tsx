@@ -85,7 +85,7 @@ export default function Faqs() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex w="100%" justify="center" align="center">

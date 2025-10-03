@@ -77,7 +77,7 @@ export default function Symptoms() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex w="100%" justify="center" align="center">
@@ -136,7 +136,7 @@ export default function Symptoms() {
               )}
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalSymptoms === 0 ? (
                 <Text mt="2" mb="6">
                   {search === ""
@@ -145,57 +145,59 @@ export default function Symptoms() {
                 </Text>
               ) : (
                 <>
-                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Sintoma</Th>
-                        <Th>Descrição</Th>
-                        {isAdmin && <Th></Th>}
-                      </Tr>
-                    </Thead>
-
-                    <Tbody>
-                      {data?.symptoms.map((symptom) => (
-                        <Tr key={symptom.id} _hover={{ bgColor: "gray.50" }}>
-                          <Td minW="120px">
-                            <Text>{symptom.name}</Text>
-                          </Td>
-                          <Td minW="200px">
-                            <Text>{symptom.description}</Text>
-                          </Td>
-                          {isAdmin && (
-                            <Td>
-                              <Flex
-                                direction={{ base: "column", md: "row" }}
-                                align={{ base: "stretch", md: "center" }}
-                                gap={2}
-                                justify="flex-end"
-                              >
-                                <Button
-                                  fontSize="lg"
-                                  h="36px"
-                                  w="36px"
-                                  colorScheme="blue"
-                                  onClick={() => handleEditSymptom(symptom)}
-                                >
-                                  <Icon as={BiPencil} />
-                                </Button>
-                                <Button
-                                  fontSize="lg"
-                                  h="36px"
-                                  w="36px"
-                                  colorScheme="red"
-                                  onClick={() => handleDeleteSymptom(symptom)}
-                                >
-                                  <Icon as={BiTrash} />
-                                </Button>
-                              </Flex>
-                            </Td>
-                          )}
+                  <Box overflowX="auto">
+                    <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                      <Thead bgColor="gray.200">
+                        <Tr>
+                          <Th>Sintoma</Th>
+                          <Th>Descrição</Th>
+                          {isAdmin && <Th></Th>}
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+
+                      <Tbody>
+                        {data?.symptoms.map((symptom) => (
+                          <Tr key={symptom.id} _hover={{ bgColor: "gray.50" }}>
+                            <Td minW="120px">
+                              <Text>{symptom.name}</Text>
+                            </Td>
+                            <Td minW="200px">
+                              <Text>{symptom.description}</Text>
+                            </Td>
+                            {isAdmin && (
+                              <Td>
+                                <Flex
+                                  direction={{ base: "column", md: "row" }}
+                                  align={{ base: "stretch", md: "center" }}
+                                  gap={2}
+                                  justify="flex-end"
+                                >
+                                  <Button
+                                    fontSize="lg"
+                                    h="36px"
+                                    w="36px"
+                                    colorScheme="blue"
+                                    onClick={() => handleEditSymptom(symptom)}
+                                  >
+                                    <Icon as={BiPencil} />
+                                  </Button>
+                                  <Button
+                                    fontSize="lg"
+                                    h="36px"
+                                    w="36px"
+                                    colorScheme="red"
+                                    onClick={() => handleDeleteSymptom(symptom)}
+                                  >
+                                    <Icon as={BiTrash} />
+                                  </Button>
+                                </Flex>
+                              </Td>
+                            )}
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
 
                   {/* Paginação */}
                   <Box w="100%" mt="3" mb="5">

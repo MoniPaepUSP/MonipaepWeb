@@ -52,7 +52,7 @@ export default function SymptomOccurrences() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex w="100%" justify="center" align="center">
@@ -70,7 +70,7 @@ export default function SymptomOccurrences() {
               </InputGroup>
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalSymptomOccurrences === 0 ? (
                 <Text mt="2" mb="6">
                   {search === ""
@@ -79,36 +79,38 @@ export default function SymptomOccurrences() {
                 </Text>
               ) : (
                 <>
-                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Nome do paciente</Th>
-                        <Th>Sintomas</Th>
-                        <Th>Observações</Th>
-                        <Th>Data de ocorrência</Th>
-                      </Tr>
-                    </Thead>
-
-                    <Tbody>
-                      {data?.symptomOccurrences.map((occurrence) => (
-                        <Tr key={occurrence.id} _hover={{ bgColor: "gray.50" }}>
-                          <Td>
-                            <NextLink
-                              href={`/dashboard/patients/unassignedsymptoms/${occurrence.patient.id}`}
-                              passHref
-                            >
-                              <Link color="blue.500" fontWeight="semibold">
-                                {occurrence.patient.name}
-                              </Link>
-                            </NextLink>
-                          </Td>
-                          <Td>{occurrence.symptoms.map((s) => s.name).join(", ")}</Td>
-                          <Td>{occurrence.remarks || "Sem observações"}</Td>
-                          <Td>{occurrence.formattedDate}</Td>
+                  <Box overflowX="auto">
+                    <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                      <Thead bgColor="gray.200">
+                        <Tr>
+                          <Th>Nome do paciente</Th>
+                          <Th>Sintomas</Th>
+                          <Th>Observações</Th>
+                          <Th>Data de ocorrência</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+
+                      <Tbody>
+                        {data?.symptomOccurrences.map((occurrence) => (
+                          <Tr key={occurrence.id} _hover={{ bgColor: "gray.50" }}>
+                            <Td>
+                              <NextLink
+                                href={`/dashboard/patients/unassignedsymptoms/${occurrence.patient.id}`}
+                                passHref
+                              >
+                                <Link color="blue.500" fontWeight="semibold">
+                                  {occurrence.patient.name}
+                                </Link>
+                              </NextLink>
+                            </Td>
+                            <Td>{occurrence.symptoms.map((s) => s.name).join(", ")}</Td>
+                            <Td>{occurrence.remarks || "Sem observações"}</Td>
+                            <Td>{occurrence.formattedDate}</Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
 
                   <Box w="100%" mt="3" mb="5">
                     <Pagination

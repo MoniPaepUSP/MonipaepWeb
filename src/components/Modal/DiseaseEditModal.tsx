@@ -182,29 +182,45 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="6xl" isCentered>
       <ModalOverlay />
-      <ModalContent maxHeight="90vh" overflowY="auto">
-        <ModalHeader>Editar Doença</ModalHeader>
+      <ModalContent
+        maxW={{ base: "95%", sm: "90%", md: "80%", lg: "70%", xl: "6xl" }}
+        maxHeight="80vh"
+        overflowY="auto"
+        p={{ base: 4, md: 6 }}
+      >
+        <ModalHeader fontSize={{ base: "lg", md: "2xl" }}>Editar Doença</ModalHeader>
         <ModalCloseButton />
+
         <ModalBody>
-          <Text mb="1">Nome</Text>
+          <Text mb="1" fontSize={{ base: "sm", md: "md" }}>Nome</Text>
           <Input value={name} onChange={handleNameInputChanged} mb={4} />
 
           <Text mb="1">Dias de monitoramento (infectado)</Text>
-          <NumberInput value={infectedMonitoringDays} onChange={handleInfectedMonitoringDaysChanged} mb={4}>
+          <NumberInput
+            value={infectedMonitoringDays}
+            onChange={handleInfectedMonitoringDaysChanged}
+            mb={4}
+            fontSize={{ base: "sm", md: "md" }}
+          >
             <NumberInputField />
           </NumberInput>
 
           <Text mb="1">Dias de monitoramento (suspeito)</Text>
-          <NumberInput value={suspectedMonitoringDays} onChange={handleSuspectedMonitoringDaysChanged} mb={4}>
+          <NumberInput
+            value={suspectedMonitoringDays}
+            onChange={handleSuspectedMonitoringDaysChanged}
+            mb={4}
+            fontSize={{ base: "sm", md: "md" }}
+          >
             <NumberInputField />
           </NumberInput>
 
-          <Tabs variant="enclosed">
-            <TabList>
-              <Tab>Sintomas</Tab>
-              <Tab>Comorbidades</Tab>
-              <Tab>Condições Especiais</Tab>
-              <Tab>Protocolos</Tab>
+          <Tabs variant="enclosed" isFitted>
+            <TabList flexWrap="wrap">
+              <Tab fontSize={{ base: "sm", md: "md" }}>Sintomas</Tab>
+              <Tab fontSize={{ base: "sm", md: "md" }}>Comorbidades</Tab>
+              <Tab fontSize={{ base: "sm", md: "md" }}>Condições Especiais</Tab>
+              <Tab fontSize={{ base: "sm", md: "md" }}>Protocolos</Tab>
             </TabList>
             <TabPanels>
               <TabPanel>
@@ -397,14 +413,24 @@ export function DiseaseEditModal({ isOpen, disease, onClose, refetchList }: Dise
             </TabPanels>
           </Tabs>
         </ModalBody>
-        <ModalFooter>
-          <Button mr={3} onClick={onClose}>Cancelar</Button>
+        <ModalFooter flexDirection={{ base: "column", sm: "row" }}>
           <Button
+            w={{ base: "100%", sm: "auto" }}
+            mb={{ base: 2, sm: 0 }}
+            mr={{ sm: 3 }}
+            onClick={onClose}
+          >
+            Cancelar
+          </Button>
+          <Button
+            w={{ base: "100%", sm: "auto" }}
             colorScheme="blue"
             onClick={handleSave}
             disabled={!touched}
             isLoading={isUpdating}
-          >Salvar</Button>
+          >
+            Salvar
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

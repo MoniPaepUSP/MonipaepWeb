@@ -69,7 +69,7 @@ export default function DiseaseOccurrences() {
 
         {isLoading ? (
           <Flex w="100%" h="100%" justify="center" align="center">
-            <Spinner size="lg" />
+            <Spinner size="lg" my="10" />
           </Flex>
         ) : error ? (
           <Flex mx={{ base: 4, md: 8 }} mt={2} align="flex-start">
@@ -92,7 +92,7 @@ export default function DiseaseOccurrences() {
               </Select>
             </Flex>
 
-            <Box mx={{ base: 4, md: 8 }} overflowX="auto">
+            <Box mx={{ base: 4, md: 8 }}>
               {data?.totalDiseaseOccurrences === 0 ? (
                 <Text mt="2" mb="6">
                   {search === ""
@@ -101,45 +101,47 @@ export default function DiseaseOccurrences() {
                 </Text>
               ) : (
                 <>
-                  <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
-                    <Thead bgColor="gray.200">
-                      <Tr>
-                        <Th>Paciente</Th>
-                        <Th>Doenças suspeitas</Th>
-                        <Th>Data de início</Th>
-                        <Th>Data de término</Th>
-                        <Th>Status</Th>
-                      </Tr>
-                    </Thead>
-                    <Tbody>
-                      {data?.diseaseOccurrences.map((occurrence) => (
-                        <Tr key={occurrence.id} _hover={{ bgColor: "gray.50" }}>
-                          <Td>
-                            <NextLink
-                              href={`/dashboard/patients/diseasehistory/${occurrence.patientId}/${occurrence.id}`}
-                              passHref
-                            >
-                              <Link color="blue.500" fontWeight="semibold">
-                                {occurrence.patient.name}
-                              </Link>
-                            </NextLink>
-                          </Td>
-                          <Td>{occurrence.diseases.map((d) => d.name).join(", ")}</Td>
-                          <Td>{occurrence.dateStartFormatted}</Td>
-                          <Td>
-                            {occurrence.dateEndFormatted ? (
-                              <Text>{occurrence.dateEndFormatted}</Text>
-                            ) : (
-                              <Badge colorScheme="green">Em andamento</Badge>
-                            )}
-                          </Td>
-                          <Td>
-                            <Badge colorScheme={getBadgeColor(occurrence.status)}>{occurrence.status}</Badge>
-                          </Td>
+                  <Box overflowX="auto">
+                    <Table size="sm" w="100%" border="1px" borderColor="gray.200" boxShadow="md" mb="4">
+                      <Thead bgColor="gray.200">
+                        <Tr>
+                          <Th>Paciente</Th>
+                          <Th>Doenças suspeitas</Th>
+                          <Th>Data de início</Th>
+                          <Th>Data de término</Th>
+                          <Th>Status</Th>
                         </Tr>
-                      ))}
-                    </Tbody>
-                  </Table>
+                      </Thead>
+                      <Tbody>
+                        {data?.diseaseOccurrences.map((occurrence) => (
+                          <Tr key={occurrence.id} _hover={{ bgColor: "gray.50" }}>
+                            <Td>
+                              <NextLink
+                                href={`/dashboard/patients/diseasehistory/${occurrence.patientId}/${occurrence.id}`}
+                                passHref
+                              >
+                                <Link color="blue.500" fontWeight="semibold">
+                                  {occurrence.patient.name}
+                                </Link>
+                              </NextLink>
+                            </Td>
+                            <Td>{occurrence.diseases.map((d) => d.name).join(", ")}</Td>
+                            <Td>{occurrence.dateStartFormatted}</Td>
+                            <Td>
+                              {occurrence.dateEndFormatted ? (
+                                <Text>{occurrence.dateEndFormatted}</Text>
+                              ) : (
+                                <Badge colorScheme="green">Em andamento</Badge>
+                              )}
+                            </Td>
+                            <Td>
+                              <Badge colorScheme={getBadgeColor(occurrence.status)}>{occurrence.status}</Badge>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                  </Box>
 
                   <Box w="100%" mt="3" mb="5">
                     <Pagination
